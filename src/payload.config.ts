@@ -2,12 +2,15 @@
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { pt } from '@payloadcms/translations/languages/pt'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { Users } from './collections/Users'
+import { Customers } from './collections/Customers'
 import { Media } from './collections/Media'
 
 const filename = fileURLToPath(import.meta.url)
@@ -19,8 +22,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      title: 'Painel Administrativo',
+      titleSuffix: '- Smilux Aligner',
+    },
   },
-  collections: [Users, Media],
+  i18n: {
+    supportedLanguages: { pt },
+  },
+  collections: [Users, Customers, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -34,6 +44,12 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
-    // storage-adapter-placeholder
+    vercelBlobStorage({
+      enabled: true,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
   ],
 })
