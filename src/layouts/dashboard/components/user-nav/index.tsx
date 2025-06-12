@@ -15,8 +15,6 @@ import { User, Settings, CreditCard, LogOut, HelpCircle } from 'lucide-react'
 export function UserNav() {
   const session = useSession()
 
-  console.log(session)
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
