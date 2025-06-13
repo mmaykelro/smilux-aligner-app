@@ -1,15 +1,56 @@
+'use client'
 import * as React from 'react'
+import { FieldErrors } from 'react-hook-form'
+import { useMask, type InputMaskProps } from '@react-input/mask'
 
 import { cn } from '@/lib/utils'
+import { getNestedValue } from '@/utils/input'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  errors?: any
+  errors?: FieldErrors
   label?: string
+  mask?: InputMaskProps['mask'] // Tipagem mais precisa
+  maskReplacement?: InputMaskProps['replacement']
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, errors, label, ...props }, ref) => {
-    const error = errors?.[props.name as any]
+  (
+    {
+      className,
+      type,
+      errors,
+      label,
+      mask,
+      maskReplacement = { _: /\d/ }, // Valor padrão
+      ...props
+    },
+    ref,
+  ) => {
+    const error = getNestedValue(errors, props?.name || '') as { message: string }
+
+    const inputRef = useMask({ mask, replacement: maskReplacement })
+
+    const setRefs = React.useCallback(
+      (node: HTMLInputElement) => {
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (ref) {
+          ref.current = node
+        }
+        // Atribui o mesmo nó à ref do useMask
+        if (typeof inputRef === 'function') {
+          //@ts-ignore
+          inputRef(node)
+        } else if (inputRef) {
+          inputRef.current = node
+        }
+      },
+      [ref, inputRef],
+    )
+
+    // Se não houver máscara, usa a ref normal. Se houver, usa a combinada.
+    const refToUse = mask ? setRefs : ref
+
     return (
       <div>
         {label && (
@@ -17,6 +58,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
+
         <input
           type={type}
           data-slot="input"
@@ -26,10 +68,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
             className,
           )}
-          ref={ref}
+          ref={refToUse}
           {...props}
         />
-        <p className="text-red-500 text-xs italic">{error?.message}</p>
+
+        {error?.message && <p className="text-red-500 text-xs italic mt-1">{error.message}</p>}
       </div>
     )
   },

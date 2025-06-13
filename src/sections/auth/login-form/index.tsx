@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { REQUIRED_FIELD, INVALID_EMAIL } from '@/constants/errors'
 import { login } from '@/services/auth'
+import { getCustomerAction } from '@/actions/customer'
 
 const schema = z.object({
   email: z.string().email(INVALID_EMAIL).min(1, REQUIRED_FIELD),
@@ -34,7 +35,22 @@ const LoginForm: React.FC = () => {
     startTransition(async () => {
       try {
         await login(values)
-        push('/')
+
+        const user = await getCustomerAction()
+
+        if (user?.isActive) {
+          if (!user?.isRegisterComplete) {
+            push('/preferencias-clinicas-iniciais')
+
+            return
+          }
+
+          push('/')
+
+          return
+        }
+
+        push('/aguardando-aprovacao')
       } catch (error) {
         toast.error('E-mail ou senha inválidos')
       }
@@ -56,11 +72,7 @@ const LoginForm: React.FC = () => {
         type="password"
         placeholder="Digite sua senha"
       />
-      <Button
-        onClick={handleSubmit(onSubmit)}
-        className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-        disabled={isPenging}
-      >
+      <Button onClick={handleSubmit(onSubmit)} className="w-full  " disabled={isPenging}>
         Entrar
       </Button>
     </form>

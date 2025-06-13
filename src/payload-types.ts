@@ -170,6 +170,131 @@ export interface User {
 export interface Customer {
   id: number;
   name: string;
+  phone: string;
+  cro: {
+    number: string;
+    state:
+      | 'AC'
+      | 'AL'
+      | 'AP'
+      | 'AM'
+      | 'BA'
+      | 'CE'
+      | 'DF'
+      | 'ES'
+      | 'GO'
+      | 'MA'
+      | 'MT'
+      | 'MS'
+      | 'MG'
+      | 'PA'
+      | 'PB'
+      | 'PR'
+      | 'PE'
+      | 'PI'
+      | 'RJ'
+      | 'RN'
+      | 'RS'
+      | 'RO'
+      | 'RR'
+      | 'SC'
+      | 'SP'
+      | 'SE'
+      | 'TO';
+  };
+  address: {
+    postalCode: string;
+    street: string;
+    number: string;
+    complement?: string | null;
+    neighborhood: string;
+    city: string;
+    state:
+      | 'AC'
+      | 'AL'
+      | 'AP'
+      | 'AM'
+      | 'BA'
+      | 'CE'
+      | 'DF'
+      | 'ES'
+      | 'GO'
+      | 'MA'
+      | 'MT'
+      | 'MS'
+      | 'MG'
+      | 'PA'
+      | 'PB'
+      | 'PR'
+      | 'PE'
+      | 'PI'
+      | 'RJ'
+      | 'RN'
+      | 'RS'
+      | 'RO'
+      | 'RR'
+      | 'SC'
+      | 'SP'
+      | 'SE'
+      | 'TO';
+  };
+  /**
+   * Preferências clínicas globais aplicadas aos tratamentos do cliente.
+   */
+  clinicalPreferences?: {
+    passiveAligners?: ('sim_adicione' | 'nao_mas_crie' | 'nenhuma') | null;
+    delayIPRStage?: ('nao_atrase' | 'estagio_1' | 'estagio_2' | 'estagio_3' | 'estagio_4' | 'estagio_5') | null;
+    /**
+     * Especifique o valor máximo de IPR permitido (ex: 0.5mm)
+     */
+    maxIPR?: string | null;
+    delayAttachmentStage?: ('nao_atrase' | 'estagio_1' | 'estagio_2' | 'estagio_3' | 'estagio_4' | 'estagio_5') | null;
+    incisalLeveling?: ('nivelar_borda' | 'nivelar_laterais_centrais' | 'laterais_05mm' | 'margem_gengival') | null;
+    elasticChain?: ('nao' | 'sim_3_3' | 'sim_6_6') | null;
+    distalizationOptions?: ('sequencial_50' | '2by2') | null;
+    elasticPositions?:
+      | (
+          | '18'
+          | '17'
+          | '16'
+          | '15'
+          | '14'
+          | '13'
+          | '12'
+          | '11'
+          | '21'
+          | '22'
+          | '23'
+          | '24'
+          | '25'
+          | '26'
+          | '27'
+          | '28'
+          | '48'
+          | '47'
+          | '46'
+          | '45'
+          | '44'
+          | '43'
+          | '42'
+          | '41'
+          | '31'
+          | '32'
+          | '33'
+          | '34'
+          | '35'
+          | '36'
+          | '37'
+          | '38'
+        )[]
+      | null;
+    specialInstructions?: string | null;
+  };
+  /**
+   * Marque esta opção para definir se o cliente está ativo ou inativo.
+   */
+  isActive?: boolean | null;
+  isRegisterComplete?: boolean | null;
   roles?: 'CUSTOMER'[] | null;
   updatedAt: string;
   createdAt: string;
@@ -296,6 +421,39 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   name?: T;
+  phone?: T;
+  cro?:
+    | T
+    | {
+        number?: T;
+        state?: T;
+      };
+  address?:
+    | T
+    | {
+        postalCode?: T;
+        street?: T;
+        number?: T;
+        complement?: T;
+        neighborhood?: T;
+        city?: T;
+        state?: T;
+      };
+  clinicalPreferences?:
+    | T
+    | {
+        passiveAligners?: T;
+        delayIPRStage?: T;
+        maxIPR?: T;
+        delayAttachmentStage?: T;
+        incisalLeveling?: T;
+        elasticChain?: T;
+        distalizationOptions?: T;
+        elasticPositions?: T;
+        specialInstructions?: T;
+      };
+  isActive?: T;
+  isRegisterComplete?: T;
   roles?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -25,7 +25,7 @@ export const authOptions: AuthOptions = {
               password,
             },
           })
-          console.log(login)
+
           const { token, user } = login
 
           const cookieStore = await cookies()

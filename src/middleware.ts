@@ -20,10 +20,10 @@ export async function middleware(req: NextRequest) {
   const decodedApiToken = getDecodedApiToken()
 
   if (token && decodedApiToken) {
-    if (Date.now() >= decodedApiToken.exp * 1000)
-      return NextResponse.redirect(new URL('/', req.url))
+    if (Date.now() >= decodedApiToken?.exp * 1000)
+      return NextResponse.redirect(new URL('/login', req.url))
 
-    if (Date.now() >= token?.exp * 1000) return NextResponse.redirect(new URL('/', req.url))
+    if (Date.now() >= token?.exp * 1000) return NextResponse.redirect(new URL('/login', req.url))
 
     return NextResponse.next()
   }
@@ -32,5 +32,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/'],
+  matcher: ['/', '/perfil', '/preferencias-clinicas-iniciais'],
 }

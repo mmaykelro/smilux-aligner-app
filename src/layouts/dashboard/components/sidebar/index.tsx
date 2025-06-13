@@ -7,20 +7,8 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Home,
-  Users,
-  Calendar,
-  FileText,
-  BarChart3,
-  Settings,
-  HelpCircle,
-  Smile,
-  CreditCard,
-  ChevronLeft,
-  LogOut,
-  X,
-} from 'lucide-react'
+import { Home, ChevronLeft, LogOut, X } from 'lucide-react'
+import { logout } from '@/services/auth'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultCollapsed?: boolean
@@ -55,7 +43,7 @@ export function Sidebar({
       const mobile = window.innerWidth < 1024
       setIsMobile(mobile)
       if (mobile) {
-        setCollapsed(false) // Always expanded on mobile when open
+        setCollapsed(false)
       }
     }
 
@@ -76,7 +64,6 @@ export function Sidebar({
     onMobileOpenChange?.(false)
   }
 
-  // Mobile overlay
   if (isMobile) {
     return (
       <>
@@ -113,83 +100,16 @@ export function Sidebar({
               <nav className="grid gap-1 px-2">
                 <SidebarItem
                   icon={Home}
-                  title="Dashboard"
-                  href="#"
+                  title="Início"
+                  href="/"
                   isActive={true}
                   isCollapsed={false}
                   onClick={closeMobile}
                 />
-                <SidebarItem
-                  icon={Users}
-                  title="Pacientes"
-                  href="#"
-                  isCollapsed={false}
-                  badge={12}
-                  onClick={closeMobile}
-                />
-                <SidebarItem
-                  icon={Calendar}
-                  title="Agendamentos"
-                  href="#"
-                  isCollapsed={false}
-                  badge={5}
-                  onClick={closeMobile}
-                />
-                <SidebarItem
-                  icon={Smile}
-                  title="Tratamentos"
-                  href="#"
-                  isCollapsed={false}
-                  onClick={closeMobile}
-                />
-                <SidebarItem
-                  icon={BarChart3}
-                  title="Relatórios"
-                  href="#"
-                  isCollapsed={false}
-                  onClick={closeMobile}
-                />
-                <SidebarItem
-                  icon={FileText}
-                  title="Documentos"
-                  href="#"
-                  isCollapsed={false}
-                  onClick={closeMobile}
-                />
-                <SidebarItem
-                  icon={CreditCard}
-                  title="Financeiro"
-                  href="#"
-                  isCollapsed={false}
-                  onClick={closeMobile}
-                />
               </nav>
-              <div className="mt-2 px-2">
-                <div className="pt-2">
-                  <div className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Configurações
-                  </div>
-                  <nav className="grid gap-1">
-                    <SidebarItem
-                      icon={Settings}
-                      title="Configurações"
-                      href="#"
-                      isCollapsed={false}
-                      onClick={closeMobile}
-                    />
-                    <SidebarItem
-                      icon={HelpCircle}
-                      title="Ajuda"
-                      href="#"
-                      isCollapsed={false}
-                      onClick={closeMobile}
-                    />
-                  </nav>
-                </div>
-              </div>
             </ScrollArea>
             <div className="mt-auto border-t p-2">
-              <Button variant="ghost" className="w-full justify-start gap-3" onClick={closeMobile}>
+              <Button onClick={logout} variant="ghost" className="w-full justify-start gap-3">
                 <LogOut className="h-5 w-5" />
                 <span>Sair</span>
               </Button>
@@ -224,9 +144,13 @@ export function Sidebar({
           )}
           {collapsed && (
             <div className="flex items-center justify-center">
-              <div className="rounded-full bg-cyan-100 p-1.5">
-                <Smile className="h-6 w-6 text-cyan-600" />
-              </div>
+              <Image
+                src="/images/logo-icon.jpeg"
+                alt="Smilux Aligner"
+                width={50}
+                height={50}
+                priority
+              />
             </div>
           )}
           <Button
@@ -246,56 +170,18 @@ export function Sidebar({
           <nav className="grid gap-1 px-2">
             <SidebarItem
               icon={Home}
-              title="Dashboard"
-              href="#"
+              title="Início"
+              href="/"
               isActive={true}
               isCollapsed={collapsed}
             />
-            <SidebarItem
-              icon={Users}
-              title="Pacientes"
-              href="#"
-              isCollapsed={collapsed}
-              badge={12}
-            />
-            <SidebarItem
-              icon={Calendar}
-              title="Agendamentos"
-              href="#"
-              isCollapsed={collapsed}
-              badge={5}
-            />
-            <SidebarItem icon={Smile} title="Tratamentos" href="#" isCollapsed={collapsed} />
-            <SidebarItem icon={BarChart3} title="Relatórios" href="#" isCollapsed={collapsed} />
-            <SidebarItem icon={FileText} title="Documentos" href="#" isCollapsed={collapsed} />
-            <SidebarItem icon={CreditCard} title="Financeiro" href="#" isCollapsed={collapsed} />
           </nav>
-          <div className="mt-2 px-2">
-            <div className="pt-2">
-              <div
-                className={cn(
-                  'mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground',
-                  collapsed && 'sr-only',
-                )}
-              >
-                Configurações
-              </div>
-              <nav className="grid gap-1">
-                <SidebarItem
-                  icon={Settings}
-                  title="Configurações"
-                  href="#"
-                  isCollapsed={collapsed}
-                />
-                <SidebarItem icon={HelpCircle} title="Ajuda" href="#" isCollapsed={collapsed} />
-              </nav>
-            </div>
-          </div>
         </ScrollArea>
         <div className="mt-auto border-t p-2">
           <Button
             variant="ghost"
             className={cn('w-full justify-start gap-3', collapsed && 'justify-center px-0')}
+            onClick={logout}
           >
             <LogOut className="h-5 w-5" />
             {!collapsed && <span>Sair</span>}

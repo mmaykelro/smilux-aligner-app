@@ -3,8 +3,8 @@ import Providers from '@/providers'
 import './styles.css'
 
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  description: 'Smilux Aligner | Sua jornada para o sorriso perfeito começa aqui',
+  title: 'Smilux Aligner | Sua jornada para o sorriso perfeito começa aqui',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
