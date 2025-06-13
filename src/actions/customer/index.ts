@@ -3,6 +3,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/libs/nextAuth'
+import { UserSessionData } from '@/types/customers'
 
 export async function createCustomerAction(data: any) {
   try {
@@ -42,8 +43,5 @@ export async function updateCustomerAction(data: any) {
 export async function getCustomerAction() {
   const session = await getServerSession(authOptions)
 
-  return session?.user as {
-    isActive: boolean
-    isRegisterComplete: boolean
-  }
+  return session?.user as UserSessionData
 }

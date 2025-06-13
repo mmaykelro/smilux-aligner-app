@@ -2,12 +2,13 @@
 
 import type React from 'react'
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Home, ChevronLeft, LogOut, X } from 'lucide-react'
+import { Home, ChevronLeft, LogOut, X, ClipboardList } from 'lucide-react'
 import { logout } from '@/services/auth'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,6 +27,19 @@ interface SidebarItemProps {
   badge?: number
   onClick?: () => void
 }
+
+const sideBaritems = [
+  {
+    icon: Home,
+    title: 'Início',
+    href: '/',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Solicitações',
+    href: '/solicitacoes',
+  },
+]
 
 export function Sidebar({
   className,
@@ -98,14 +112,16 @@ export function Sidebar({
             </div>
             <ScrollArea className="flex-1 py-2">
               <nav className="grid gap-1 px-2">
-                <SidebarItem
-                  icon={Home}
-                  title="Início"
-                  href="/"
-                  isActive={true}
-                  isCollapsed={false}
-                  onClick={closeMobile}
-                />
+                {sideBaritems.map((item) => (
+                  <SidebarItem
+                    key={item.title}
+                    icon={item.icon}
+                    title={item.title}
+                    href={item.href}
+                    isCollapsed={collapsed}
+                    onClick={closeMobile}
+                  />
+                ))}
               </nav>
             </ScrollArea>
             <div className="mt-auto border-t p-2">
@@ -120,7 +136,6 @@ export function Sidebar({
     )
   }
 
-  // Desktop sidebar
   return (
     <div className="relative">
       <div
@@ -168,13 +183,15 @@ export function Sidebar({
         </div>
         <ScrollArea className="flex-1 py-2">
           <nav className="grid gap-1 px-2">
-            <SidebarItem
-              icon={Home}
-              title="Início"
-              href="/"
-              isActive={true}
-              isCollapsed={collapsed}
-            />
+            {sideBaritems.map((item) => (
+              <SidebarItem
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                href={item.href}
+                isCollapsed={collapsed}
+              />
+            ))}
           </nav>
         </ScrollArea>
         <div className="mt-auto border-t p-2">
@@ -192,35 +209,38 @@ export function Sidebar({
   )
 }
 
-function SidebarItem({
-  icon: Icon,
-  title,
-  href,
-  isActive,
-  isCollapsed,
-  badge,
-  onClick,
-}: SidebarItemProps) {
+function SidebarItem({ icon: Icon, title, href, isCollapsed, badge, onClick }: SidebarItemProps) {
+  const currentPath = usePathname()
+
+  const isActive = (href: string) =>
+    href !== '/' ? currentPath.includes(href) : currentPath === href
+
   return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent',
-        isActive ? 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100' : 'text-muted-foreground',
-        isCollapsed && 'justify-center px-0',
-      )}
+    <Button
+      variant="ghost"
+      className={`justify-start ${isActive(href) && 'bg-accent text-primary'}`}
+      asChild
     >
-      <div className="relative">
-        <Icon className={cn('h-5 w-5', isActive && 'text-cyan-600')} />
-        {badge && !isCollapsed && (
-          <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium text-white">
-            {badge}
-          </span>
+      <Link
+        href={href}
+        onClick={onClick}
+        className={cn(
+          'flex items-center gap-3 rounded-lg  py-2 text-sm font-medium transition-all',
+
+          isCollapsed && 'justify-center px-0',
         )}
-      </div>
-      {!isCollapsed && <span>{title}</span>}
-    </Link>
+      >
+        <div className="relative">
+          <Icon className="h-5 w-5" />
+          {badge && !isCollapsed && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium text-white">
+              {badge}
+            </span>
+          )}
+        </div>
+        {!isCollapsed && <span>{title}</span>}
+      </Link>
+    </Button>
   )
 }
 

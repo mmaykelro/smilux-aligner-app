@@ -3,8 +3,8 @@ import Providers from '@/providers'
 import './styles.css'
 
 export const metadata = {
-  description: 'Smilux Aligner | Sua jornada para o sorriso perfeito começa aqui',
-  title: 'Smilux Aligner | Sua jornada para o sorriso perfeito começa aqui',
+  description: 'Smilux Aligner | Criado por ortodontista, pensado para ortodontistas.',
+  title: 'Smilux Aligner | Criado por ortodontista, pensado para ortodontistas.',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {

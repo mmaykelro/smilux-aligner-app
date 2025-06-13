@@ -18,8 +18,10 @@ const LoginPage = () => {
             className="mx-auto mb-4"
             priority
           />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bem-vindo ao Smilux</h1>
-          <p className="text-gray-600">Sua jornada para o sorriso perfeito começa aqui</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Seja bem-vindo(a) à Smilux alinhadores
+          </h1>
+          <p className="text-gray-600">Criado por ortodontista, pensado para ortodontistas.</p>
         </div>
 
         <Card className="shadow-xl border-0">

@@ -2,8 +2,42 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getCustomerAction } from '@/actions/customer'
 
-const AguardandoAprovacaoPage: React.FC = () => {
+const AguardandoAprovacaoPage: React.FC = async () => {
+  const user = await getCustomerAction()
+
+  const name = user?.name || ''
+
+  function getWhatsappMessage(name = '', extraText = '') {
+    const now = new Date()
+    const hour = now.getHours()
+    let greeting = 'Bom dia'
+
+    if (hour >= 12 && hour < 18) {
+      greeting = 'Boa tarde'
+    } else if (hour >= 18 || hour < 5) {
+      greeting = 'Boa noite'
+    }
+
+    let message = `${greeting},`
+    if (name && name.trim() !== '') {
+      message += ` me chamo ${name.trim()}.`
+    }
+    if (extraText && extraText.trim() !== '') {
+      message += ` ${extraText.trim()}`
+    }
+
+    const mensagemEncoded = encodeURIComponent(message)
+    const link = `https://wa.me/556198395485?text=${mensagemEncoded}`
+    return link
+  }
+
+  const whatsappMessage = getWhatsappMessage(
+    name,
+    'Acabei de fazer o cadastro na plataforma e gostaria de saber como posso liberar o meu acesso?',
+  )
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center">
       <main className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
@@ -16,8 +50,10 @@ const AguardandoAprovacaoPage: React.FC = () => {
             Sua conta foi criada e está aguardando aprovação. Para liberar seu acesso, por favor,
             entre em contato com o nosso suporte.
           </p>
-          <Button className="w-full bg-[#007bff] hover:bg-[#0056b3] text-white">
-            Entrar em Contato com o Suporte
+          <Button className="w-full bg-[#007bff] hover:bg-[#0056b3] text-white" asChild>
+            <Link href={whatsappMessage} target="_blank">
+              Entrar em Contato com o Suporte
+            </Link>
           </Button>
 
           <Link href="/login" passHref>
