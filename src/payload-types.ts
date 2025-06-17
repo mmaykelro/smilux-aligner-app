@@ -70,6 +70,7 @@ export interface Config {
   collections: {
     users: User;
     customers: Customer;
+    requests: Request;
     media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -79,6 +80,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
+    requests: RequestsSelect<false> | RequestsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -170,6 +172,7 @@ export interface User {
 export interface Customer {
   id: number;
   name: string;
+  cpf: string;
   phone: string;
   cro: {
     number: string;
@@ -294,6 +297,7 @@ export interface Customer {
    * Marque esta opção para definir se o cliente está ativo ou inativo.
    */
   isActive?: boolean | null;
+  requests?: (number | Request)[] | null;
   isRegisterComplete?: boolean | null;
   roles?: 'CUSTOMER'[] | null;
   updatedAt: string;
@@ -306,6 +310,88 @@ export interface Customer {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * Formulários de prescrição para novos tratamentos com alinhadores.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "requests".
+ */
+export interface Request {
+  id: number;
+  publicId?: string | null;
+  titleForList?: string | null;
+  customer: number | Customer;
+  patient: string;
+  /**
+   * Qualquer outra informação relevante para este caso que não se encaixa nos campos acima.
+   */
+  additionalInfo?: string | null;
+  documents?:
+    | {
+        documentName: string;
+        documentFile: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  archToTreat: 'both' | 'upper' | 'lower';
+  /**
+   * Selecione algum dente que NÃO deseje movimentar na arcada SUPERIOR (implante, anquilose, prótese, etc).
+   */
+  upperJawMovementRestriction?:
+    | ('11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '21' | '22' | '23' | '24' | '25' | '26' | '27')[]
+    | null;
+  /**
+   * Selecione algum dente que NÃO deseje movimentar na arcada INFERIOR (implante, anquilose, prótese, etc).
+   */
+  lowerJawMovementRestriction?:
+    | ('31' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '41' | '42' | '43' | '44' | '45' | '46' | '47')[]
+    | null;
+  apRelationUpper?: ('improve_canine' | 'improve_canine_and_molar' | 'improve_molar' | 'none') | null;
+  apRelationLower?: ('improve_canine' | 'improve_canine_and_molar' | 'improve_molar' | 'none') | null;
+  /**
+   * Detalhes sobre a distalização "2 by 2" ou em bloco de no máximo 2mm.
+   */
+  distalizationInstructions?: string | null;
+  elasticCutouts?: {
+    canineElastic?: ('right' | 'left' | 'both' | 'none') | null;
+    canineButton?: ('right' | 'left' | 'both' | 'none') | null;
+    molarElastic?: ('right' | 'left' | 'both' | 'none') | null;
+    molarButton?: ('right' | 'left' | 'both' | 'none') | null;
+  };
+  elasticCutoutInstructions?: string | null;
+  useAttachments: 'yes' | 'no';
+  upperJawNoAttachments?:
+    | ('11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '21' | '22' | '23' | '24' | '25' | '26' | '27')[]
+    | null;
+  lowerJawNoAttachments?:
+    | ('31' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '41' | '42' | '43' | '44' | '45' | '46' | '47')[]
+    | null;
+  /**
+   * Limite padrão de 0,5mm entre as faces.
+   */
+  performIPR: 'yes' | 'no' | 'detail_below';
+  /**
+   * Caso deseje, detalhe a região exata de onde fazer (IPR). Por exemplo: fazer IPR de 0,3mm entre os dentes 44 e 45.
+   */
+  iprDetails?: string | null;
+  /**
+   * No caso de presença de DIASTEMAS não visualizados no escaneamento, por favor descrever exatamente a região a ser movimentada. Por exemplo: fechar diastema de 0,2mm entre os dentes 16 e 17.
+   */
+  diastemaInstructions?: string | null;
+  generalInstructions?: string | null;
+  sendWhatsappLink: 'yes' | 'no';
+  whatsappNumber?: string | null;
+  /**
+   * Este é o status atual do tratamento. Este campo pode ser alterado a qualquer momento.
+   */
+  status: 'documentation_check' | 'in_progress' | 'completed';
+  /**
+   * Link externo para o planejamento virtual ou acompanhamento do caso.
+   */
+  trackingLink?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Gerencie os arquivos de mídia do site
@@ -342,6 +428,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'customers';
         value: number | Customer;
+      } | null)
+    | ({
+        relationTo: 'requests';
+        value: number | Request;
       } | null)
     | ({
         relationTo: 'media';
@@ -421,6 +511,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   name?: T;
+  cpf?: T;
   phone?: T;
   cro?:
     | T
@@ -453,6 +544,7 @@ export interface CustomersSelect<T extends boolean = true> {
         specialInstructions?: T;
       };
   isActive?: T;
+  requests?: T;
   isRegisterComplete?: T;
   roles?: T;
   updatedAt?: T;
@@ -464,6 +556,52 @@ export interface CustomersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "requests_select".
+ */
+export interface RequestsSelect<T extends boolean = true> {
+  publicId?: T;
+  titleForList?: T;
+  customer?: T;
+  patient?: T;
+  additionalInfo?: T;
+  documents?:
+    | T
+    | {
+        documentName?: T;
+        documentFile?: T;
+        id?: T;
+      };
+  archToTreat?: T;
+  upperJawMovementRestriction?: T;
+  lowerJawMovementRestriction?: T;
+  apRelationUpper?: T;
+  apRelationLower?: T;
+  distalizationInstructions?: T;
+  elasticCutouts?:
+    | T
+    | {
+        canineElastic?: T;
+        canineButton?: T;
+        molarElastic?: T;
+        molarButton?: T;
+      };
+  elasticCutoutInstructions?: T;
+  useAttachments?: T;
+  upperJawNoAttachments?: T;
+  lowerJawNoAttachments?: T;
+  performIPR?: T;
+  iprDetails?: T;
+  diastemaInstructions?: T;
+  generalInstructions?: T;
+  sendWhatsappLink?: T;
+  whatsappNumber?: T;
+  status?: T;
+  trackingLink?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

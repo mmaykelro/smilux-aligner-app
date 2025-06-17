@@ -11,6 +11,7 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
+import { Requests } from './collections/Requests'
 import { Media } from './collections/Media'
 
 const filename = fileURLToPath(import.meta.url)
@@ -30,7 +31,7 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { pt },
   },
-  collections: [Users, Customers, Media],
+  collections: [Users, Customers, Requests, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

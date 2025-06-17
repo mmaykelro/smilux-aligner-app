@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,15 +22,15 @@ import { cn } from '@/lib/utils'
 import { updateCustomerAction } from '@/actions/customer'
 
 interface FormData {
-  passiveAligners: string
-  delayIPRStage: string
-  delayAttachmentStage: string
-  maxIPR: string
-  incisalLeveling: string
-  elasticChain: string
-  distalizationOptions: string
+  passiveAligners: string | null
+  delayIPRStage: string | null
+  delayAttachmentStage: string | null
+  maxIPR: string | null
+  incisalLeveling: string | null
+  elasticChain: string | null
+  distalizationOptions: string | null
   elasticPositions: string[]
-  specialInstructions: string
+  specialInstructions: string | null
 }
 
 const steps = [
@@ -83,15 +82,15 @@ const lowerTeeth = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 
 const PreferenciasClinicasIniciaisForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
-    passiveAligners: '',
-    delayIPRStage: '',
-    delayAttachmentStage: '',
-    maxIPR: '',
-    incisalLeveling: '',
-    elasticChain: '',
-    distalizationOptions: '',
+    passiveAligners: null,
+    delayIPRStage: null,
+    delayAttachmentStage: null,
+    maxIPR: null,
+    incisalLeveling: null,
+    elasticChain: null,
+    distalizationOptions: null,
     elasticPositions: [],
-    specialInstructions: '',
+    specialInstructions: null,
   })
 
   const [isLoading, setTransition] = useTransition()
@@ -131,21 +130,15 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
     }
   }
 
-  const session = useSession()
-
   const handleSubmit = async () => {
     setTransition(async () => {
       try {
-        //@ts-ignore
-        const userId = session?.data?.user?.id
-
         await updateCustomerAction({
           clinicalPreferences: formData,
-          id: userId,
           isRegisterComplete: true,
         })
 
-        push('/')
+        push('/aguardando-aprovacao')
       } catch (error) {}
     })
   }
@@ -197,7 +190,7 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
             <div className="space-y-4">
               <Label className="text-base font-medium">Atrase o estágio para iniciar o IPR</Label>
               <Select
-                value={formData.delayIPRStage}
+                value={formData.delayIPRStage as string}
                 onValueChange={(value) => updateFormData('delayIPRStage', value)}
               >
                 <SelectTrigger>
@@ -219,7 +212,7 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
               </Label>
               <Input
                 id="maxIPR"
-                value={formData.maxIPR}
+                value={formData.maxIPR as string}
                 onChange={(e) => updateFormData('maxIPR', e.target.value)}
                 placeholder="Digite o valor máximo (ex: 0.5mm)"
                 type="text"
@@ -237,7 +230,7 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
             <div className="space-y-4">
               <Label className="text-base font-medium">Atrase a colocação do attachment</Label>
               <Select
-                value={formData.delayAttachmentStage}
+                value={formData.delayAttachmentStage as string}
                 onValueChange={(value) => updateFormData('delayAttachmentStage', value)}
               >
                 <SelectTrigger>
@@ -441,7 +434,7 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
               </p>
               <Textarea
                 id="specialInstructions"
-                value={formData.specialInstructions}
+                value={formData.specialInstructions as string}
                 onChange={(e) => updateFormData('specialInstructions', e.target.value)}
                 placeholder="Digite suas instruções especiais aqui..."
                 rows={8}

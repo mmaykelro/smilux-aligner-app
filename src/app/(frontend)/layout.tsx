@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import Providers from '@/providers'
 import './styles.css'
 
@@ -14,7 +14,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en">
       <body>
         <main>
-          <Providers>{children}</Providers>
+          <Providers>
+            <Suspense>{children}</Suspense>
+          </Providers>
         </main>
       </body>
     </html>

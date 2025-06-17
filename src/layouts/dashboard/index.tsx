@@ -38,7 +38,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <UserNav />
           </div>
         </header>
-        <main className="flex-1 space-y-4 p-4 lg:p-6">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   )

@@ -22,19 +22,20 @@ export async function createCustomerAction(data: any) {
 
 export async function updateCustomerAction(data: any) {
   try {
+    const user = await getCustomerAction()
+
     const payload = await getPayload({
       config: configPromise,
     })
 
     await payload.update({
       collection: 'customers',
-      where: {
-        id: {
-          equals: data?.id,
-        },
-      },
-      data,
+      id: user.id,
+      data: data,
+      user: user,
     })
+
+    return user
   } catch (error) {
     throw error
   }

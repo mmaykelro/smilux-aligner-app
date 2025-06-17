@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { ADMIN_USERS_GROUP } from '@/constants/payload'
 import { BrazilianStates } from '@/constants/address'
+import { validateCPF } from '@/utils/documents'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
@@ -20,6 +21,16 @@ export const Customers: CollectionConfig = {
 
   auth: true,
 
+  access: {
+    read: () => true,
+
+    update: () => true,
+
+    create: () => true,
+
+    delete: () => true,
+  },
+
   hooks: {},
 
   fields: [
@@ -29,6 +40,20 @@ export const Customers: CollectionConfig = {
       required: true,
       label: {
         pt: 'Nome',
+      },
+    },
+    {
+      name: 'cpf',
+      type: 'text',
+      label: 'CPF',
+      required: true,
+      unique: false,
+      //@ts-ignore
+      validate: (value) => {
+        if (value && !validateCPF(value)) {
+          return 'O CPF informado é inválido.'
+        }
+        return true
       },
     },
 
@@ -304,6 +329,21 @@ export const Customers: CollectionConfig = {
         description: 'Marque esta opção para definir se o cliente está ativo ou inativo.',
       },
       saveToJWT: true,
+    },
+
+    {
+      name: 'requests',
+      label: 'Prescrições Associadas',
+      type: 'relationship',
+      relationTo: 'requests',
+      hasMany: true,
+      admin: {
+        components: {
+          Field: {
+            path: '/components/payload/customer-requests-table/index.tsx#CustomerRequestsList',
+          },
+        },
+      },
     },
     {
       name: 'isRegisterComplete',

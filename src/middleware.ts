@@ -32,5 +32,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/perfil', '/preferencias-clinicas-iniciais'],
+  matcher: ['/', '/perfil', '/preferencias-clinicas-iniciais', '/solicitacoes/:path*'],
 }

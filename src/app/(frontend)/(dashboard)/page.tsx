@@ -3,12 +3,17 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import RequestCard from '@/components/request-card'
 import { getCustomerAction } from '@/actions/customer'
+import { getRequestsStatausAction } from '@/actions/requests'
+import { redirect } from 'next/navigation'
 
 export default async function HomePage() {
   const user = await getCustomerAction()
+  const requests = await getRequestsStatausAction()
+
+  if (!user?.isActive) redirect('/login')
 
   return (
-    <div className="flex-1 space-y-4">
+    <div className="flex-1 space-y-4  p-4 lg:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-muted-foreground">
@@ -26,9 +31,13 @@ export default async function HomePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <RequestCard title="Verificando documentação" icon="documents-loading" />
-        <RequestCard title="Em andamento" icon="loading" />
-        <RequestCard title="Casos finalizados" icon="ok" />
+        <RequestCard
+          title="Verificando documentação"
+          icon="documents-loading"
+          amount={requests?.documentation_check}
+        />
+        <RequestCard title="Em andamento" icon="loading" amount={requests?.in_progress} />
+        <RequestCard title="Casos finalizados" icon="ok" amount={requests?.completed} />
       </div>
     </div>
   )

@@ -21,8 +21,11 @@ import {
   PASSWORD_NOT_MATCH,
   INVALID_PHONE,
   INVALID_POSTAL_CODE,
+  INVALID_CPF,
+  EMAIL_ALREADY_IN_USE,
 } from '@/constants/errors'
 import { BrazilianStates } from '@/constants/address'
+import { validateCPF } from '@/utils/documents'
 import { getAddressByCEP } from '@/services/address'
 import { login } from '@/services/auth'
 import { createCustomerAction } from '@/actions/customer'
@@ -32,6 +35,9 @@ const phoneRegex = /^\([1-9]{2}\)\s?9?\d{4}-\d{4}$/
 const schema = z
   .object({
     name: z.string().min(1, REQUIRED_FIELD),
+    cpf: z.string().min(1, REQUIRED_FIELD).refine(validateCPF, {
+      message: INVALID_CPF,
+    }),
     email: z.string().email(INVALID_EMAIL).min(1, REQUIRED_FIELD),
     phone: z
       .string({
@@ -40,6 +46,7 @@ const schema = z
       .refine((value) => phoneRegex.test(value), {
         message: INVALID_PHONE,
       }),
+
     cro: z.object({
       number: z.string().min(1, REQUIRED_FIELD),
       state: z.string({
@@ -76,6 +83,7 @@ const RegisterForm: React.FC = () => {
     formState: { errors },
     setValue,
     clearErrors,
+    setError,
   } = useForm<SchemaFormData>({
     resolver: zodResolver(schema),
   })
@@ -103,6 +111,8 @@ const RegisterForm: React.FC = () => {
       try {
         const address = await getAddressByCEP(e.target.value)
 
+        clearErrors('address.postalCode')
+
         clearErrors('address.street')
         clearErrors('address.neighborhood')
         clearErrors('address.state')
@@ -113,7 +123,9 @@ const RegisterForm: React.FC = () => {
         setUf(address.uf)
         setValue('address.state', address.uf)
         setValue('address.city', address.localidade)
-      } catch (error) {}
+      } catch (error) {
+        setError('address.postalCode', { message: INVALID_POSTAL_CODE })
+      }
     })
   }
 
@@ -125,7 +137,10 @@ const RegisterForm: React.FC = () => {
         await createCustomerAction(values)
         await login({ email, password })
         push('/preferencias-clinicas-iniciais')
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.message?.includes('email')) {
+          setError('email', { message: EMAIL_ALREADY_IN_USE })
+        }
         toast.error('Ocorreu um erro inesperado ao tentar cadastrar o cliente.')
       }
     })
@@ -139,6 +154,14 @@ const RegisterForm: React.FC = () => {
           errors={errors}
           label="Nome"
           placeholder="Digite seu nome completo"
+        />
+
+        <Input
+          {...register('cpf')}
+          errors={errors}
+          label="CPF"
+          placeholder="Digite seu número de seu CPF"
+          mask="___.___.___-__"
         />
 
         <Input

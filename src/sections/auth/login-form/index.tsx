@@ -50,6 +50,12 @@ const LoginForm: React.FC = () => {
           return
         }
 
+        if (!user?.isRegisterComplete) {
+          push('/preferencias-clinicas-iniciais')
+
+          return
+        }
+
         push('/aguardando-aprovacao')
       } catch (error) {
         toast.error('E-mail ou senha inválidos')
