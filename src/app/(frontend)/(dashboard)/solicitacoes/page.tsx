@@ -4,19 +4,25 @@ import { Button } from '@/components/ui/button'
 import RequestTable from '@/sections/requests/request-table'
 import { Plus } from 'lucide-react'
 import PageHeader from '@/constants/page-header'
-import { getRequestsAction, getRequestsStatausAction } from '@/actions/requests'
+import { getRequestsAction, getRequestsStatusAction } from '@/actions/requests'
 
 type SearchParams = Promise<{ [key: string]: string }>
 
 async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }) {
-  const { pagina = 1, limite = 10 } = await searchParams
+  const { pagina = 1, limite = 10, paciente, status } = await searchParams
 
   const requests = await getRequestsAction({
-    limit: +limite,
-    page: +pagina,
+    pagination: {
+      limit: +limite,
+      page: +pagina,
+    },
+    filters: {
+      patient: paciente,
+      status,
+    },
   })
 
-  const requestsStatus = await getRequestsStatausAction()
+  const requestsStatus = await getRequestsStatusAction()
 
   return (
     <>

@@ -160,7 +160,7 @@ export function Sidebar({
           {collapsed && (
             <div className="flex items-center justify-center">
               <Image
-                src="/images/logo-icon.jpeg"
+                src="/images/logo-icon.png"
                 alt="Smilux Aligner"
                 width={50}
                 height={50}

@@ -54,7 +54,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div>
         {label && (
-          <label className="block text-sm font-medium text-[#1f2937]" htmlFor={props.name}>
+          <label className="block mb-2 text-base font-medium text-[#1f2937]" htmlFor={props.name}>
             {label}
           </label>
         )}

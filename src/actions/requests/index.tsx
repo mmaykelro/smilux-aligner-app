@@ -14,7 +14,15 @@ async function fileToBuffer(file: File): Promise<Buffer> {
   return Buffer.from(arrayBuffer)
 }
 
-export async function getRequestsAction(pagination?: Pagination) {
+type RequestsActions = {
+  pagination?: Pagination
+  filters?: {
+    patient?: string
+    status?: string
+  }
+}
+
+export async function getRequestsAction({ pagination }: RequestsActions) {
   const page = pagination?.page || 1
   const limit = pagination?.limit || 10
 
@@ -43,7 +51,7 @@ export async function getRequestsAction(pagination?: Pagination) {
   })
 }
 
-export async function getRequestsStatausAction() {
+export async function getRequestsStatusAction() {
   const payload = await getPayload({
     config: configPromise,
   })

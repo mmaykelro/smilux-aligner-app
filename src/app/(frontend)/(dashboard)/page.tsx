@@ -3,12 +3,12 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import RequestCard from '@/components/request-card'
 import { getCustomerAction } from '@/actions/customer'
-import { getRequestsStatausAction } from '@/actions/requests'
+import { getRequestsStatusAction } from '@/actions/requests'
 import { redirect } from 'next/navigation'
 
 export default async function HomePage() {
   const user = await getCustomerAction()
-  const requests = await getRequestsStatausAction()
+  const requests = await getRequestsStatusAction()
 
   if (!user?.isActive) redirect('/login')
 
