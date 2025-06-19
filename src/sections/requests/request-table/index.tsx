@@ -77,8 +77,8 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
   }
 
   return (
-    <div className="w-[calc(100vw-30px)]">
-      <div className="rounded-md border overflow-x-scroll">
+    <div className="sm:w-full w-[calc(100vw-30px)]">
+      <div className="rounded-md border sm:overflow-auto overflow-x-scroll">
         <Table>
           <TableHeader>
             <TableRow>
