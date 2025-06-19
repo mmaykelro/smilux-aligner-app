@@ -91,7 +91,7 @@ const RequestPreview: React.FC<RequestPreviewProps> = ({
       </Card>
 
       {status !== 'completed' && (
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center space-x-4">
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center ">
           <Button
             onClick={approveRequest}
             disabled={isLoading}
