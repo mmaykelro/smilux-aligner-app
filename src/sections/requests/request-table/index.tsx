@@ -32,8 +32,6 @@ type RequestTableProps = {
 const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => {
   const [sortField, setSortField] = useState<keyof Request>('createdAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [searchTerm, setSearchTerm] = useState('')
 
   const searchParams = useSearchParams()
 
@@ -49,24 +47,16 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
     }
   }
 
-  const filteredAndSortedRequests = requests
-    .filter((request) => {
-      const matchesSearch = request.patient.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAndSortedRequests = requests?.sort((a, b) => {
+    const aValue = a[sortField]
+    const bValue = b[sortField]
 
-      const matchesStatus = statusFilter === 'all' || request.status === statusFilter
-
-      return matchesSearch && matchesStatus
-    })
-    .sort((a, b) => {
-      const aValue = a[sortField]
-      const bValue = b[sortField]
-
-      if (sortDirection === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-      }
-    })
+    if (sortDirection === 'asc') {
+      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+    } else {
+      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
+    }
+  })
 
   const getStatusLabel = (status: string) => {
     const statusMap: Record<string, string> = {

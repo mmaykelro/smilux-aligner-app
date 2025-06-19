@@ -1,9 +1,10 @@
 'use server'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayload, Where } from 'payload'
 import { getCustomerAction } from '@/actions/customer'
 import { statusOptions } from '@/constants/requests'
 import { Pagination } from '@/types'
+import { parseDateForQuery, getNextDay } from '@/utils/date'
 
 type StatusValue = (typeof statusOptions)[number]['value']
 
@@ -19,10 +20,12 @@ type RequestsActions = {
   filters?: {
     patient?: string
     status?: string
+    from?: string
+    to?: string
   }
 }
 
-export async function getRequestsAction({ pagination }: RequestsActions) {
+export async function getRequestsAction({ pagination, filters }: RequestsActions) {
   const page = pagination?.page || 1
   const limit = pagination?.limit || 10
 
@@ -32,13 +35,62 @@ export async function getRequestsAction({ pagination }: RequestsActions) {
 
   const user = await getCustomerAction()
 
+  if (!user) {
+    return {
+      docs: [],
+      totalDocs: 0,
+      page: 1,
+      limit,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPrevPage: false,
+    }
+  }
+
+  const where: Where = {
+    customer: {
+      equals: user.id,
+    },
+  }
+
+  if (filters) {
+    if (filters.status && filters.status !== 'todos') {
+      where.status = {
+        equals: filters.status,
+      }
+    }
+
+    if (filters?.patient) {
+      where.patient = {
+        like: filters.patient,
+      }
+    }
+
+    const dateConditions: { greater_than_or_equal?: string; less_than?: string } = {}
+
+    if (filters?.from) {
+      const startDate = parseDateForQuery(filters.from)
+      if (startDate) {
+        dateConditions.greater_than_or_equal = startDate
+      }
+    }
+
+    if (filters?.to) {
+      const endDate = parseDateForQuery(filters.to)
+      if (endDate) {
+        dateConditions.less_than = getNextDay(endDate)
+      }
+    }
+
+    if (Object.keys(dateConditions).length > 0) {
+      //@ts-ignore
+      where.createdAt = dateConditions
+    }
+  }
+
   return payload.find({
     collection: 'requests',
-    where: {
-      customer: {
-        equals: user?.id,
-      },
-    },
+    where,
     select: {
       publicId: true,
       patient: true,

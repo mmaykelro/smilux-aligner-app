@@ -2,36 +2,12 @@ import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import RequestsTableFilters from '@/sections/requests/requests-table-filters'
-import RequestTable from '@/sections/requests/request-table'
+import RequestTableLoading from '@/sections/requests/request-table-loading'
 import { Plus } from 'lucide-react'
 import PageHeader from '@/constants/page-header'
-import { getRequestsAction, getRequestsStatusAction } from '@/actions/requests'
+import { getRequestsStatusAction } from '@/actions/requests'
 
-type SearchParams = Promise<{ [key: string]: string }>
-
-async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }) {
-  const { pagina = 1, limite = 10, paciente, status, data_inicial, data_final } = await searchParams
-
-  const mapStatus: any = {
-    todos: '',
-    verificando_documentacao: 'documentation_check',
-    em_andamento: 'in_progress',
-    finalizado: 'completed',
-  }
-
-  const requests = await getRequestsAction({
-    pagination: {
-      limit: +limite,
-      page: +pagina,
-    },
-    filters: {
-      patient: paciente,
-      status: mapStatus[status],
-      from: data_inicial,
-      to: data_final,
-    },
-  })
-
+async function SolicitacoesLoadingPage() {
   const requestsStatus = await getRequestsStatusAction()
 
   return (
@@ -72,10 +48,10 @@ async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }
 
         <RequestsTableFilters />
 
-        <RequestTable requests={requests.docs as []} totalPages={requests.totalPages} />
+        <RequestTableLoading />
       </div>
     </>
   )
 }
 
-export default SolicitacoesPage
+export default SolicitacoesLoadingPage
