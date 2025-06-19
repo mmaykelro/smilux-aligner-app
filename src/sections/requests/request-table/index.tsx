@@ -77,87 +77,89 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleSort('patient')}
-            >
-              Paciente {sortField === 'patient' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </TableHead>
-
-            <TableHead>Status</TableHead>
-            <TableHead
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleSort('createdAt')}
-            >
-              Data de Criação {sortField === 'createdAt' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </TableHead>
-
-            <TableHead className="text-right">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {!filteredAndSortedRequests?.length ? (
+    <div className="w-[calc(100vw-30px)]">
+      <div className="rounded-md border overflow-x-scroll">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                Nenhuma solicitação encontrada
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredAndSortedRequests.map((item) => (
-              <TableRow key={item.publicId}>
-                <TableCell>{item.patient}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusVariant(item.status)}>
-                    {getStatusLabel(item.status)}
-                  </Badge>
-                </TableCell>
-                <TableCell>{formatDate(item.createdAt)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end space-x-2">
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Link href={`/solicitacoes/${item.publicId}`}>
-                          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Visualizar solicitação</p>
-                      </TooltipContent>
-                    </Tooltip>
+              <TableHead
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleSort('patient')}
+              >
+                Paciente {sortField === 'patient' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </TableHead>
 
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Link href={`/solicitacoes/editar/${item.publicId}`}>
-                          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Editar solicitação</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
+              <TableHead>Status</TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleSort('createdAt')}
+              >
+                Data de Criação {sortField === 'createdAt' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </TableHead>
+
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {!filteredAndSortedRequests?.length ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                  Nenhuma solicitação encontrada
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              filteredAndSortedRequests.map((item) => (
+                <TableRow key={item.publicId}>
+                  <TableCell>{item.patient}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusVariant(item.status)}>
+                      {getStatusLabel(item.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{formatDate(item.createdAt)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-end space-x-2">
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Link href={`/solicitacoes/${item.publicId}`}>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Visualizar solicitação</p>
+                        </TooltipContent>
+                      </Tooltip>
 
-      <Pagination
-        data={filteredAndSortedRequests}
-        title="solicitações"
-        page={+pagina}
-        limit={+limite}
-        totalPages={totalPages}
-      />
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Link href={`/solicitacoes/editar/${item.publicId}`}>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar solicitação</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+
+        <Pagination
+          data={filteredAndSortedRequests}
+          title="solicitações"
+          page={+pagina}
+          limit={+limite}
+          totalPages={totalPages}
+        />
+      </div>
     </div>
   )
 }

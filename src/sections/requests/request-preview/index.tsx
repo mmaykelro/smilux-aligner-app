@@ -100,7 +100,7 @@ const RequestPreview: React.FC<RequestPreviewProps> = ({
             <CheckCircle className="h-4 w-4 mr-2" />
             Aprovar
           </Button>
-          <Link href={`/solicitacoes/editar/${requestId}`}>
+          <Link href={`/solicitacoes/editar/${requestId}`} className="w-full sm:w-fit">
             <Button variant="outline" className="w-full sm:w-fit min-w-32">
               <Edit className="h-4 w-4 mr-2" />
               Solicitar Alterações
