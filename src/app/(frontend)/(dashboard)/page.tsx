@@ -31,13 +31,21 @@ export default async function HomePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <RequestCard
-          title="Verificando documentação"
-          icon="documents-loading"
-          amount={requests?.documentation_check}
-        />
-        <RequestCard title="Em andamento" icon="loading" amount={requests?.in_progress} />
-        <RequestCard title="Casos finalizados" icon="ok" amount={requests?.completed} />
+        <Link href="/solicitacoes/?status=verificando_documentacao">
+          <RequestCard
+            title="Verificando documentação"
+            icon="documents-loading"
+            amount={requests?.documentation_check}
+          />
+        </Link>
+
+        <Link href="/solicitacoes/?status=em_andamento">
+          <RequestCard title="Em andamento" icon="loading" amount={requests?.in_progress} />
+        </Link>
+
+        <Link href="/solicitacoes/?status=finalizado">
+          <RequestCard title="Casos finalizados" icon="ok" amount={requests?.completed} />
+        </Link>
       </div>
     </div>
   )

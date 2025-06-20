@@ -5,6 +5,7 @@ import { getCustomerAction } from '@/actions/customer'
 import { statusOptions } from '@/constants/requests'
 import { Pagination } from '@/types'
 import { parseDateForQuery, getNextDay } from '@/utils/date'
+import { revalidatePath } from 'next/cache'
 
 type StatusValue = (typeof statusOptions)[number]['value']
 
@@ -96,6 +97,15 @@ export async function getRequestsAction({ pagination, filters }: RequestsActions
       patient: true,
       status: true,
       createdAt: true,
+      payment: {
+        pixUrl: true,
+        cardUrl: true,
+        status: true,
+      },
+      tracking: {
+        trackingCode: true,
+        status: true,
+      },
     },
     pagination: true,
     page,
@@ -264,6 +274,28 @@ export async function getRequestAction(publicId: string) {
   return payload
     .find({
       collection: 'requests',
+      select: {
+        orderId: true,
+        createdAt: true,
+        completionDate: true,
+        trackingLink: true,
+        patient: true,
+        publicId: true,
+        status: true,
+        payment: {
+          pixUrl: true,
+          cardUrl: true,
+          status: true,
+        },
+        tracking: {
+          status: true,
+          carrier: true,
+          trackingCode: true,
+          trackingUrl: true,
+          sentDate: true,
+          estimatedArrival: true,
+        },
+      },
       where: {
         publicId: {
           equals: publicId,
@@ -272,6 +304,7 @@ export async function getRequestAction(publicId: string) {
           equals: user.id,
         },
       },
+
       limit: 1,
     })
     .then((result) => result?.docs?.[0])
@@ -298,4 +331,33 @@ export async function approveRequestAction(publicId: string) {
       status: 'completed',
     },
   })
+
+  revalidatePath(`/solicitacoes/${publicId}`)
+}
+
+export async function confirmRequestDeliverytAction(publicId: string) {
+  const payload = await getPayload({
+    config: configPromise,
+  })
+
+  const user = await getCustomerAction()
+
+  await payload.update({
+    collection: 'requests',
+    where: {
+      publicId: {
+        equals: publicId,
+      },
+      customer: {
+        equals: user?.id,
+      },
+    },
+    data: {
+      tracking: {
+        status: 'delivered',
+      },
+    },
+  })
+
+  revalidatePath(`/solicitacoes/${publicId}`)
 }

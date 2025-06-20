@@ -17,7 +17,7 @@ const Select = React.forwardRef(({ label, errors, ...props }: SelectProps, ref) 
   return (
     <div className="flex flex-col gap-0">
       {label && (
-        <label className="block text-sm font-medium text-[#1f2937] " htmlFor={props.name}>
+        <label className="block mb-2 text-base font-medium text-[#1f2937]" htmlFor={props.name}>
           {label}
         </label>
       )}

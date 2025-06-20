@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Edit, ExternalLink, AlertCircle } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { approveRequestAction } from '@/actions/requests'
 
 type RequestPreviewProps = {
@@ -24,8 +23,6 @@ const RequestPreview: React.FC<RequestPreviewProps> = ({
 }) => {
   const [isLoading, startTransition] = useTransition()
 
-  const { push } = useRouter()
-
   const handleOpenInNewTab = () => {
     if (trackingLink) {
       window.open(trackingLink, '_blank')
@@ -36,8 +33,6 @@ const RequestPreview: React.FC<RequestPreviewProps> = ({
     startTransition(async () => {
       try {
         await approveRequestAction(requestId as string)
-
-        push('/solicitacoes')
 
         toast.success('Solicitação aprovada com sucesso!')
       } catch {

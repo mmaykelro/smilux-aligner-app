@@ -89,8 +89,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'terms-conditions': TermsCondition;
+  };
+  globalsSelect: {
+    'terms-conditions': TermsConditionsSelect<false> | TermsConditionsSelect<true>;
+  };
   locale: null;
   user:
     | (User & {
@@ -321,6 +325,14 @@ export interface Request {
   id: number;
   publicId?: string | null;
   titleForList?: string | null;
+  /**
+   * ID sequencial único gerado automaticamente quando a solicitação é finalizada.
+   */
+  orderId?: number | null;
+  /**
+   * Data em que a solicitação foi marcada como concluída.
+   */
+  completionDate?: string | null;
   customer: number | Customer;
   patient: string;
   /**
@@ -334,7 +346,7 @@ export interface Request {
         id?: string | null;
       }[]
     | null;
-  archToTreat: 'both' | 'upper' | 'lower';
+  archToTreat: 'none' | 'both' | 'upper' | 'lower';
   /**
    * Selecione algum dente que NÃO deseje movimentar na arcada SUPERIOR (implante, anquilose, prótese, etc).
    */
@@ -390,6 +402,37 @@ export interface Request {
    * Link externo para o planejamento virtual ou acompanhamento do caso.
    */
   trackingLink?: string | null;
+  payment: {
+    status: 'not_paid' | 'paid';
+    /**
+     * Insira o link de pagamento via Pix.
+     */
+    pixUrl?: string | null;
+    /**
+     * Insira o link de pagamento via Cartão de Crédito.
+     */
+    cardUrl?: string | null;
+  };
+  tracking: {
+    status: 'not_sent' | 'preparing' | 'sent' | 'delivered';
+    carrier?: string | null;
+    /**
+     * Código de rastreio dos Correios ou transportadora.
+     */
+    trackingCode?: string | null;
+    /**
+     * Link direto para a página de rastreio.
+     */
+    trackingUrl?: string | null;
+    /**
+     * A data em que o pedido foi efetivamente enviado.
+     */
+    sentDate?: string | null;
+    /**
+     * A data estimada para a entrega do pedido.
+     */
+    estimatedArrival?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -564,6 +607,8 @@ export interface CustomersSelect<T extends boolean = true> {
 export interface RequestsSelect<T extends boolean = true> {
   publicId?: T;
   titleForList?: T;
+  orderId?: T;
+  completionDate?: T;
   customer?: T;
   patient?: T;
   additionalInfo?: T;
@@ -600,6 +645,23 @@ export interface RequestsSelect<T extends boolean = true> {
   whatsappNumber?: T;
   status?: T;
   trackingLink?: T;
+  payment?:
+    | T
+    | {
+        status?: T;
+        pixUrl?: T;
+        cardUrl?: T;
+      };
+  tracking?:
+    | T
+    | {
+        status?: T;
+        carrier?: T;
+        trackingCode?: T;
+        trackingUrl?: T;
+        sentDate?: T;
+        estimatedArrival?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -652,6 +714,42 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Termo de prestação de serviços
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms-conditions".
+ */
+export interface TermsCondition {
+  id: number;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms-conditions_select".
+ */
+export interface TermsConditionsSelect<T extends boolean = true> {
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

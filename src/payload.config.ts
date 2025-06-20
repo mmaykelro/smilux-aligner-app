@@ -14,6 +14,8 @@ import { Customers } from './collections/Customers'
 import { Requests } from './collections/Requests'
 import { Media } from './collections/Media'
 
+import { TermsConditions } from './globals/TermsConditions'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -32,6 +34,7 @@ export default buildConfig({
     supportedLanguages: { pt },
   },
   collections: [Users, Customers, Requests, Media],
+  globals: [TermsConditions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

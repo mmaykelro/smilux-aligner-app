@@ -13,15 +13,33 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import Pagination from '@/components/pagination'
-import { Eye, Edit } from 'lucide-react'
+import { Eye, Edit, DollarSign } from 'lucide-react'
 import { formatDate } from '@/utils/date'
+import RequestPaymentOrderForm from '@/sections/requests/request-payment-order-form'
 
 type Request = {
   publicId: string
   patient: string
   status: string
   createdAt: string
+  payment: {
+    pixUrl?: string
+    cardUrl?: string
+    status?: string
+  }
+  tracking: {
+    trackingCode?: string
+    status?: string
+  }
 }
 
 type RequestTableProps = {
@@ -32,6 +50,7 @@ type RequestTableProps = {
 const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => {
   const [sortField, setSortField] = useState<keyof Request>('createdAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
 
   const searchParams = useSearchParams()
 
@@ -74,6 +93,10 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
       completed: 'bg-green-50 text-green-600',
     }
     return variantMap[status] || ''
+  }
+
+  function handleClosePaymentModal() {
+    setIsPaymentModalOpen(false)
   }
 
   return (
@@ -144,6 +167,42 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
                           <p>Editar solicitação</p>
                         </TooltipContent>
                       </Tooltip>
+
+                      {item?.status === 'completed' &&
+                        (!!item?.payment?.pixUrl?.length || !!item?.payment?.cardUrl?.length) &&
+                        item.payment?.status === 'not_paid' && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Dialog
+                                open={isPaymentModalOpen}
+                                onOpenChange={setIsPaymentModalOpen}
+                              >
+                                <DialogTrigger>
+                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                    <DollarSign className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Efetuar pagamento</DialogTitle>
+                                    <DialogDescription>
+                                      Escolha o melhor método abaixo para realizar o pagamento
+                                    </DialogDescription>
+                                  </DialogHeader>
+
+                                  <RequestPaymentOrderForm
+                                    pixUrl={item?.payment?.pixUrl || ''}
+                                    cardUrl={item?.payment?.cardUrl || ''}
+                                    onClose={handleClosePaymentModal}
+                                  />
+                                </DialogContent>
+                              </Dialog>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Efetuar pagamento</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                     </div>
                   </TableCell>
                 </TableRow>

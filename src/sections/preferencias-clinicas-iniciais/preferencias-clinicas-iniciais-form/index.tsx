@@ -22,7 +22,6 @@ import {
   ElasticPositionStep,
   SpecialInstructionsStep,
 } from './steps'
-import { REQUIRED_FIELD } from '@/constants/errors'
 
 const formSchema = z.object({
   passiveAligners: z.string().min(1, 'Selecione uma opção para alinhadores passivos'),
@@ -33,7 +32,7 @@ const formSchema = z.object({
   elasticChain: z.string().min(1, 'Selecione uma opção para cadeia elástica'),
   distalizationOptions: z.string().min(1, 'Selecione uma opção de distalização'),
   elasticPositions: z.array(z.string()).optional(),
-  specialInstructions: z.string().min(1, REQUIRED_FIELD),
+  specialInstructions: z.string().optional(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -113,16 +112,7 @@ const PreferenciasClinicasIniciaisForm: React.FC = () => {
     },
   })
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    trigger,
-    formState: { errors },
-    setValue,
-    getValues,
-    reset,
-  } = form
+  const { handleSubmit, trigger, reset } = form
 
   useEffect(() => {
     reset({

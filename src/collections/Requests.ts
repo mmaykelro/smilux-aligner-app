@@ -58,15 +58,49 @@ export const Requests: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, req, operation }) => {
+      async ({ data, req, operation, originalDoc }) => {
+        if (
+          operation === 'update' &&
+          data.status === 'completed' &&
+          originalDoc.status !== 'completed' &&
+          !data.orderId
+        ) {
+          const {
+            docs: [lastRequest],
+          } = await req.payload.find({
+            collection: 'requests',
+            sort: '-orderId',
+            limit: 1,
+            where: {
+              orderId: {
+                exists: true,
+              },
+            },
+          })
+
+          if (lastRequest && lastRequest.orderId) {
+            data.orderId = lastRequest.orderId + 1
+          } else {
+            data.orderId = 200
+          }
+
+          if (!data.completionDate) {
+            data.completionDate = new Date().toISOString()
+          }
+        }
+
+        if (operation === 'update') {
+          const trackingLinkAddedOrChanged =
+            data.trackingLink && data.trackingLink !== originalDoc.trackingLink
+
+          if (trackingLinkAddedOrChanged) {
+            data.status = 'in_progress'
+          }
+        }
+
         if (operation === 'create') {
           data.publicId = uuidv4()
         }
-
-        await relalidatePaths({
-          req,
-          paths: ['/', '/solicitaões'],
-        })
 
         const statusOption = [
           { label: 'Verificando documentação', value: 'documentation_check' },
@@ -78,6 +112,15 @@ export const Requests: CollectionConfig = {
 
         data.titleForList = `${data.patient} - [${statusLabel}]`
         return data
+      },
+    ],
+
+    afterChange: [
+      async ({ doc, req }) => {
+        await relalidatePaths({
+          req,
+          paths: ['/', '/solicitaões', `/solicitacoes/${doc.slug}`],
+        })
       },
     ],
   },
@@ -110,6 +153,35 @@ export const Requests: CollectionConfig = {
             }
           },
         ],
+      },
+    },
+    {
+      name: 'orderId',
+      label: 'ID do Pedido',
+      type: 'number',
+      unique: true,
+      index: true,
+      min: 200,
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description:
+          'ID sequencial único gerado automaticamente quando a solicitação é finalizada.',
+        step: 1,
+      },
+    },
+    {
+      name: 'completionDate',
+      label: 'Data de Conclusão',
+      type: 'date',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: 'Data em que a solicitação foi marcada como concluída.',
+        date: {
+          pickerAppearance: 'dayAndTime',
+          displayFormat: 'dd/MM/yyyy HH:mm',
+        },
       },
     },
     {
@@ -176,6 +248,7 @@ export const Requests: CollectionConfig = {
               type: 'radio',
               required: true,
               options: [
+                { label: 'Nenhum', value: 'none' },
                 { label: 'Ambos', value: 'both' },
                 { label: 'Superior', value: 'upper' },
                 { label: 'Inferior', value: 'lower' },
@@ -443,6 +516,130 @@ export const Requests: CollectionConfig = {
         position: 'sidebar',
         description: 'Link externo para o planejamento virtual ou acompanhamento do caso.',
       },
+    },
+
+    {
+      name: 'payment',
+      label: 'Detalhes do Pagamento',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'status',
+          label: 'Status do Pagamento',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Não Pago', value: 'not_paid' },
+            { label: 'Pagamento Realizado', value: 'paid' },
+          ],
+          defaultValue: 'not_paid',
+        },
+        {
+          name: 'pixUrl',
+          label: 'Link do Pagamento via Pix',
+          type: 'textarea',
+          //@ts-ignore
+          validate: validateUrl,
+          admin: {
+            description: 'Insira o link de pagamento via Pix.',
+          },
+        },
+        {
+          name: 'cardUrl',
+          label: 'Link do Pagamento via Cartão de Crédito',
+          type: 'textarea',
+          //@ts-ignore
+          validate: validateUrl,
+          admin: {
+            description: 'Insira o link de pagamento via Cartão de Crédito.',
+          },
+        },
+      ],
+    },
+    {
+      name: 'tracking',
+      label: 'Envio',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'status',
+          label: 'Status do Envio',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Não Enviado', value: 'not_sent' },
+            { label: 'Em Preparação', value: 'preparing' },
+            { label: 'Enviado', value: 'sent' },
+            { label: 'Recebido', value: 'delivered' },
+          ],
+          defaultValue: 'not_sent',
+        },
+        {
+          name: 'carrier',
+          label: 'Transportadora',
+          type: 'text',
+          admin: {
+            condition: (data, siblingData) =>
+              siblingData.status === 'sent' || siblingData.status === 'delivered',
+          },
+        },
+        {
+          name: 'trackingCode',
+          label: 'Código de Rastreio',
+          type: 'text',
+          admin: {
+            description: 'Código de rastreio dos Correios ou transportadora.',
+            condition: (data, siblingData) =>
+              siblingData.status === 'sent' || siblingData.status === 'delivered',
+          },
+        },
+        {
+          name: 'trackingUrl',
+          label: 'Link de Rastreio',
+          type: 'textarea',
+          //@ts-ignore
+          validate: validateUrl,
+          admin: {
+            description: 'Link direto para a página de rastreio.',
+            condition: (data, siblingData) =>
+              siblingData.status === 'sent' || siblingData.status === 'delivered',
+          },
+        },
+        {
+          name: 'sentDate',
+          label: 'Data do Envio',
+          type: 'date',
+          admin: {
+            description: 'A data em que o pedido foi efetivamente enviado.',
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'dd/MM/yyyy',
+            },
+            condition: (data, siblingData) =>
+              siblingData.status === 'sent' || siblingData.status === 'delivered',
+          },
+        },
+        {
+          name: 'estimatedArrival',
+          label: 'Previsão de Chegada',
+          type: 'date',
+          admin: {
+            description: 'A data estimada para a entrega do pedido.',
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'dd/MM/yyyy',
+            },
+            condition: (data, siblingData) =>
+              siblingData.status === 'sent' || siblingData.status === 'delivered',
+          },
+        },
+      ],
     },
   ],
 }

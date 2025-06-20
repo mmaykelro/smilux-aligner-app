@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Send, Plus, Trash2 } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { createRequestAction, updateRequestAction } from '@/actions/requests'
 import { REQUIRED_FIELD } from '@/constants/errors'
 
@@ -92,16 +92,40 @@ const formSchema = z
       .array(
         z.object({
           documentName: z.string().min(1, 'Nome do documento é obrigatório'),
-          documentFile: z.union(
-            [z.instanceof(File, { message: 'Por favor, anexe um arquivo.' }), mediaFileSchema],
-            {
-              required_error: 'O arquivo do documento é obrigatório.',
-            },
-          ),
+          documentFile: z
+            .union([
+              z.instanceof(File, { message: 'Por favor, anexe um arquivo.' }),
+              mediaFileSchema,
+            ])
+            .optional(),
         }),
       )
-      .optional(),
-    archToTreat: z.enum(['both', 'upper', 'lower'], {
+      .optional()
+      .superRefine((documents, ctx) => {
+        if (!documents) {
+          return
+        }
+
+        const requiredDocNames = [
+          'Radiografia panorâmica',
+          'Telerradiografia',
+          'Arquivo STL da arcada superior',
+          'Arquivo STL da arcada inferior',
+        ]
+
+        documents.forEach((doc, index) => {
+          const isRequired = requiredDocNames.includes(doc.documentName)
+
+          if (isRequired && !doc.documentFile) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `O arquivo para "${doc.documentName}" é obrigatório.`,
+              path: [index, 'documentFile'],
+            })
+          }
+        })
+      }),
+    archToTreat: z.enum(['both', 'upper', 'lower', 'none'], {
       required_error: 'Selecione qual arcada tratar',
     }),
     upperJawMovementRestriction: z.array(z.string()).optional(),
@@ -144,6 +168,19 @@ const formSchema = z
   })
   .refine(
     (data) => {
+      if (data.performIPR === 'detail_below') {
+        return !!data.iprDetails?.length
+      }
+
+      return true
+    },
+    {
+      message: 'Os detalhes do IPR são obrigatórios quando esta opção é selecionada.',
+      path: ['iprDetails'],
+    },
+  )
+  .refine(
+    (data) => {
       if (data.sendWhatsappLink === 'yes' && !data.whatsappNumber) {
         return false
       }
@@ -154,6 +191,11 @@ const formSchema = z
       path: ['whatsappNumber'],
     },
   )
+  .refine((data) => {
+    if (data.archToTreat === 'none') {
+      return true
+    }
+  })
   .refine(
     (data) => {
       if (
@@ -212,7 +254,27 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
       elasticCutoutInstructions: request?.elasticCutoutInstructions || '',
       diastemaInstructions: request?.diastemaInstructions || '',
       iprDetails: request?.iprDetails || '',
-      documents: request?.documents,
+      generalInstructions: request?.generalInstructions || '',
+      additionalInfo: request?.additionalInfo || '',
+      sendWhatsappLink: request?.sendWhatsappLink,
+      whatsappNumber: request?.whatsappNumber || '',
+      documents: request?.documents || [
+        {
+          documentName: 'Radiografia panorâmica',
+        },
+        {
+          documentName: 'Telerradiografia',
+        },
+        {
+          documentName: 'Arquivo STL da arcada superior',
+        },
+        {
+          documentName: 'Arquivo STL da arcada inferior',
+        },
+        {
+          documentName: 'Outros',
+        },
+      ],
     },
   })
 
@@ -303,6 +365,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
   useEffect(() => {
     if (request) {
       form.reset(request)
+
+      const element = document?.querySelector(`[name="additionalInfo"]`) as HTMLElement
+
+      element.focus({ preventScroll: true })
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [request])
 
@@ -343,26 +410,14 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       <div className="space-y-4">
                         {field.value?.map((document, index) => (
                           <div key={index} className="border rounded-lg p-4 space-y-4">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-medium">Documento {index + 1}</h4>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const newDocuments =
-                                    field.value?.filter((_, i) => i !== index) || []
-                                  field.onChange(newDocuments)
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
+                                <Label className="mt-6 text-base font-medium">
+                                  {document.documentName}
+                                </Label>
                                 <Input
-                                  label="Nome do Documento"
+                                  disabled
+                                  className="hidden"
                                   id={`document-name-${index}`}
                                   name={`documents.${index}.documentName`}
                                   placeholder="Ex: Radiografia panorâmica"
@@ -381,7 +436,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
                               <div>
                                 <Input
-                                  label="Arquivo do Documento"
+                                  label={`Arquivo - ${document.documentName}`}
                                   id={`document-file-${index}`}
                                   name={`documents.${index}.documentFile`}
                                   type="file"
@@ -415,22 +470,6 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                             </div>
                           </div>
                         ))}
-
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            const newDocuments = [
-                              ...(field.value || []),
-                              { documentName: '', documentFile: null },
-                            ]
-                            field.onChange(newDocuments)
-                          }}
-                          className="w-full"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Adicionar Documento
-                        </Button>
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -458,6 +497,10 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                           value={field.value}
                           className="flex flex-col space-y-2"
                         >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="none" id="none" />
+                            <Label htmlFor="none">Nenhum</Label>
+                          </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="both" id="both" />
                             <Label htmlFor="both">Ambos</Label>
@@ -932,23 +975,20 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                 />
 
                 {watchedValues.performIPR === 'detail_below' && (
-                  <FormField
-                    control={form.control}
-                    name="iprDetails"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Detalhes do IPR</FormLabel>
-                        <FormDescription>
-                          Caso deseje, detalhe a região exata de onde fazer (IPR). Por exemplo:
-                          fazer IPR de 0,3mm entre os dentes 44 e 45.
-                        </FormDescription>
-                        <FormControl>
-                          <Textarea placeholder="Descreva os detalhes do IPR..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <FormLabel>Detalhes do IPR</FormLabel>
+                    <FormDescription>
+                      Caso deseje, detalhe a região exata de onde fazer (IPR). Por exemplo: fazer
+                      IPR de 0,3mm entre os dentes 44 e 45.
+                    </FormDescription>
+                    <Textarea
+                      {...register('iprDetails')}
+                      errors={errors}
+                      placeholder="Descreva os detalhes do IPR..."
+                    />
+
+                    <FormMessage />
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -1032,25 +1072,15 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                     label="Qual o seu whatsapp com DDD?"
                     placeholder="Digite seu número do whatsapp"
                     mask="(__) _____-____"
+                    defaultValue=""
                   />
                 )}
 
                 {!!request && (
-                  <FormField
-                    control={form.control}
-                    name="additionalInfo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Informações adicionais</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Descreva o que mais precisa ser alterado..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  <Textarea
+                    label="Informações adicionais"
+                    placeholder="Descreva o que mais precisa ser alterado..."
+                    {...register('additionalInfo')}
                   />
                 )}
               </CardContent>

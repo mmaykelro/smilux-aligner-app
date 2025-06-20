@@ -65,37 +65,6 @@ export const CustomerRequestsList: React.FC<{ path: string }> = () => {
     })()
   }, [params])
 
-  // React.useEffect(() => {
-  //   // Se não houver IDs, não faz nada
-  //   if (!requestIds || requestIds.length === 0) {
-  //     setRequests([])
-  //     return
-  //   }
-
-  //   const fetchRequests = async () => {
-  //     setIsLoading(true)
-  //     try {
-  //       // Constrói a query para buscar todas as requests cujos IDs estão na lista
-  //       const query = `where[id][in]=${requestIds.join(',')}`
-  //       console.log(`${serverURL}/api/requests?${query}&depth=0&limit=${requestIds.length}`)
-  //       const response = await fetch(
-  //         `${serverURL}/api/requests?${query}&depth=0&limit=${requestIds.length}`,
-  //       )
-  //       const data = await response.json()
-
-  //       if (data.docs) {
-  //         setRequests(data.docs)
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to fetch customer requests:', error)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-
-  //   fetchRequests()
-  // }, [requestIds, serverURL])
-
   if (isLoading) {
     return <div>Carregando prescrições...</div>
   }
