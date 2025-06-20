@@ -8,7 +8,7 @@ import { getNestedValue } from '@/utils/input'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   errors?: FieldErrors
-  label?: string
+  label?: string | React.ReactNode
   mask?: InputMaskProps['mask'] // Tipagem mais precisa
   maskReplacement?: InputMaskProps['replacement']
 }

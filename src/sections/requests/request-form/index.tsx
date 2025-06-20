@@ -5,6 +5,7 @@ import { useForm, FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
@@ -27,7 +28,8 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Send } from 'lucide-react'
+import RadioInput from '@/components/radio-input'
+import { Send, Trash2 } from 'lucide-react'
 import { createRequestAction, updateRequestAction } from '@/actions/requests'
 import { REQUIRED_FIELD } from '@/constants/errors'
 
@@ -168,7 +170,7 @@ const formSchema = z
   })
   .refine(
     (data) => {
-      if (data.performIPR === 'detail_below') {
+      if (data?.performIPR === 'detail_below') {
         return !!data.iprDetails?.length
       }
 
@@ -181,7 +183,7 @@ const formSchema = z
   )
   .refine(
     (data) => {
-      if (data.sendWhatsappLink === 'yes' && !data.whatsappNumber) {
+      if (data?.sendWhatsappLink === 'yes' && !data?.whatsappNumber) {
         return false
       }
       return true
@@ -191,15 +193,14 @@ const formSchema = z
       path: ['whatsappNumber'],
     },
   )
-  .refine((data) => {
-    if (data.archToTreat === 'none') {
-      return true
-    }
-  })
   .refine(
     (data) => {
+      if (data?.archToTreat === 'none') {
+        return true
+      }
+
       if (
-        (data.archToTreat === 'upper' || data.archToTreat === 'both') &&
+        (data?.archToTreat === 'upper' || data?.archToTreat === 'both') &&
         (!data.upperJawMovementRestriction || data.upperJawMovementRestriction.length === 0)
       ) {
         return false
@@ -215,7 +216,7 @@ const formSchema = z
   .refine(
     (data) => {
       if (
-        (data.archToTreat === 'lower' || data.archToTreat === 'both') &&
+        (data?.archToTreat === 'lower' || data?.archToTreat === 'both') &&
         (!data.lowerJawMovementRestriction || data.lowerJawMovementRestriction.length === 0)
       ) {
         return false
@@ -237,7 +238,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
   const form = useForm<RequestFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      archToTreat: undefined,
+      archToTreat: request?.archToTreat,
       apRelationUpper: request?.apRelationLower || 'none',
       apRelationLower: request?.apRelationLower || 'none',
       elasticCutouts: {
@@ -315,6 +316,21 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
   const [isLoading, startTransition] = useTransition()
 
+  function handleRemoveDocument({ field, document }: any) {
+    const newDocuments = field.value?.map((item: any) => {
+      if (item.documentName === document.documentName) {
+        return {
+          ...item,
+          documentFile: null,
+        }
+      }
+
+      return item
+    })
+
+    field.onChange(newDocuments)
+  }
+
   const onSubmit = (data: RequestFormData) => {
     startTransition(async () => {
       try {
@@ -365,7 +381,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
   useEffect(() => {
     if (request) {
       form.reset(request)
-
+      console.log(request)
       const element = document?.querySelector(`[name="additionalInfo"]`) as HTMLElement
 
       element.focus({ preventScroll: true })
@@ -408,7 +424,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                     <FormItem>
                       <FormLabel>Documentos</FormLabel>
                       <div className="space-y-4">
-                        {field.value?.map((document, index) => (
+                        {field.value?.map((document: any, index) => (
                           <div key={index} className="border rounded-lg p-4 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
@@ -436,12 +452,43 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
                               <div>
                                 <Input
-                                  label={`Arquivo - ${document.documentName}`}
+                                  label={
+                                    <div className="flex flex-row justify-between">
+                                      <span>{`Arquivo - ${document.documentName}`}</span>
+
+                                      {!!watch(`documents.${index}.documentFile`) && (
+                                        <Tooltip>
+                                          <TooltipTrigger>
+                                            <Button
+                                              type="button"
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() =>
+                                                handleRemoveDocument({
+                                                  field,
+                                                  document,
+                                                })
+                                              }
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </TooltipTrigger>
+
+                                          <TooltipContent>
+                                            Remover arquivo: {document.documentName}
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  }
                                   id={`document-file-${index}`}
                                   name={`documents.${index}.documentFile`}
                                   type="file"
                                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                                   errors={errors}
+                                  onClick={(event: React.MouseEvent<HTMLInputElement>) => {
+                                    ;(event.target as HTMLInputElement).value = ''
+                                  }}
                                   onChange={(e) => {
                                     const file = e.target.files?.[0]
                                     if (file) {
@@ -485,39 +532,27 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                 <CardDescription>Configure as arcadas e restrições de movimento</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <FormField
-                  control={control}
+                <RadioInput
                   name="archToTreat"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Tratar arcada</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          className="flex flex-col space-y-2"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="none" id="none" />
-                            <Label htmlFor="none">Nenhum</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="both" id="both" />
-                            <Label htmlFor="both">Ambos</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="upper" id="upper" />
-                            <Label htmlFor="upper">Superior</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="lower" id="lower" />
-                            <Label htmlFor="lower">Inferior</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Tratar arcada"
+                  options={[
+                    {
+                      label: 'Nenhum',
+                      value: 'none',
+                    },
+                    {
+                      label: 'Ambos',
+                      value: 'both',
+                    },
+                    {
+                      label: 'Superior',
+                      value: 'upper',
+                    },
+                    {
+                      label: 'Inferior',
+                      value: 'lower',
+                    },
+                  ]}
                 />
 
                 {shouldShowUpperFields && (

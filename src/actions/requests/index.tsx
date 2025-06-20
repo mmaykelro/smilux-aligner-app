@@ -274,28 +274,6 @@ export async function getRequestAction(publicId: string) {
   return payload
     .find({
       collection: 'requests',
-      select: {
-        orderId: true,
-        createdAt: true,
-        completionDate: true,
-        trackingLink: true,
-        patient: true,
-        publicId: true,
-        status: true,
-        payment: {
-          pixUrl: true,
-          cardUrl: true,
-          status: true,
-        },
-        tracking: {
-          status: true,
-          carrier: true,
-          trackingCode: true,
-          trackingUrl: true,
-          sentDate: true,
-          estimatedArrival: true,
-        },
-      },
       where: {
         publicId: {
           equals: publicId,

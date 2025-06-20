@@ -30,14 +30,12 @@ const RadioInput: React.FC<RadioInputProps> = ({ label, name, options }) => {
               field.onChange(value)
             }}
             value={field.value}
-            className="space-y-3"
+            className="flex flex-col space-y-2"
           >
             {options.map((option) => (
-              <div key={option.value} className="flex items-start space-x-3">
-                <RadioGroupItem value={option.value} id={option.value} className="mt-1" />
-                <Label htmlFor={option.value} className="text-sm leading-relaxed">
-                  {option.label}
-                </Label>
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem value={option.value} id={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
               </div>
             ))}
           </RadioGroup>
