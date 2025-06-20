@@ -156,6 +156,18 @@ export const Requests: CollectionConfig = {
       },
     },
     {
+      name: 'generatePDF',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: {
+            path: '/components/payload/generate-pdf-report-button/index.tsx#GeneratePdfReportButton',
+          },
+        },
+      },
+    },
+    {
       name: 'orderId',
       label: 'ID do Pedido',
       type: 'number',
@@ -167,7 +179,6 @@ export const Requests: CollectionConfig = {
         position: 'sidebar',
         description:
           'ID sequencial único gerado automaticamente quando a solicitação é finalizada.',
-        step: 1,
       },
     },
     {

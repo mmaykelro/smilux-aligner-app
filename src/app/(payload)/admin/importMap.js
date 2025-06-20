@@ -1,5 +1,6 @@
 import { MaskedPhoneInput as MaskedPhoneInput_0495fa4eea39b9544e375cdd1cd475ae } from '../../../components/payload/masked-phone-input/index.tsx'
 import { CustomerRequestsList as CustomerRequestsList_39fefec750556f8b9c62599396fdaa5d } from '../../../components/payload/customer-requests-table/index.tsx'
+import { GeneratePdfReportButton as GeneratePdfReportButton_e63ef844ced0154af7a287d6d951b8a4 } from '../../../components/payload/generate-pdf-report-button/index.tsx'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -33,6 +34,7 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 export const importMap = {
   "/components/payload/masked-phone-input/index.tsx#MaskedPhoneInput": MaskedPhoneInput_0495fa4eea39b9544e375cdd1cd475ae,
   "/components/payload/customer-requests-table/index.tsx#CustomerRequestsList": CustomerRequestsList_39fefec750556f8b9c62599396fdaa5d,
+  "/components/payload/generate-pdf-report-button/index.tsx#GeneratePdfReportButton": GeneratePdfReportButton_e63ef844ced0154af7a287d6d951b8a4,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
