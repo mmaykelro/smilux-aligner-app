@@ -300,7 +300,7 @@ const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
           <div className="flex w-full justify-end">
             <Button
               onClick={handleOpenConfirmDelivery}
-              disabled={currentStatus === 'delivered'}
+              disabled={currentStatus !== 'sent'}
               className="w-full sm:w-fit flex items-center gap-2 bg-green-600 hover:bg-green-500"
             >
               <CheckCircle className="h-4 w-4" />
