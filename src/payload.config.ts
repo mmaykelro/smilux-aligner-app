@@ -28,6 +28,23 @@ export default buildConfig({
     meta: {
       title: 'Painel Administrativo',
       titleSuffix: '- Smilux Aligner',
+      icons: [
+        {
+          rel: 'icon',
+          url: '/app/favicon.ico',
+          type: 'image/x-icon',
+        },
+      ],
+    },
+    components: {
+      graphics: {
+        Logo: {
+          path: '/components/payload/logo/index.tsx#Logo',
+        },
+        Icon: {
+          path: '/components/payload/icon/index.tsx#Icon',
+        },
+      },
     },
   },
   i18n: {
