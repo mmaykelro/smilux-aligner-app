@@ -42,6 +42,7 @@ import { validateCPF } from '@/utils/documents'
 import { getAddressByCEP } from '@/services/address'
 import { login } from '@/services/auth'
 import { createCustomerAction } from '@/actions/customer'
+import LoadingScreen from '@/components/loading-screen'
 
 const phoneRegex = /^\([1-9]{2}\)\s?9?\d{4}-\d{4}$/
 
@@ -392,6 +393,8 @@ const RegisterForm: React.FC<Props> = ({ termsConditions }) => {
       >
         Criar Conta
       </Button>
+
+      {isLoadingSubmit && <LoadingScreen isVisible={isLoadingSubmit} />}
     </form>
   )
 }

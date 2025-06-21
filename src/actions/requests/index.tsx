@@ -6,6 +6,22 @@ import { statusOptions } from '@/constants/requests'
 import { Pagination } from '@/types'
 import { parseDateForQuery, getNextDay } from '@/utils/date'
 import { revalidatePath } from 'next/cache'
+import {
+  createEmailSubject,
+  createRequestEmailHTML,
+} from '@/utils/emails/templates/createRequestEmail'
+import {
+  updateEmailSubject,
+  updateRequestEmailHTML,
+} from '@/utils/emails/templates/updateRequestEmail'
+import {
+  approveRequestAdminSubject,
+  approveRequestAdminHTML,
+} from '@/utils/emails/templates/approveRequestEmail'
+import {
+  statusUpdateEmailSubject,
+  statusUpdateEmailHTML,
+} from '@/utils/emails/templates/requestStatusUpdateEmail'
 
 type StatusValue = (typeof statusOptions)[number]['value']
 
@@ -196,6 +212,20 @@ export async function createRequestAction(formData: FormData) {
       status: 'documentation_check',
     },
   })
+
+  const emailData = {
+    ...rawData,
+    customer: user,
+  }
+
+  const subject = createEmailSubject(emailData)
+  const html = createRequestEmailHTML(emailData)
+
+  await payload.email.sendEmail({
+    to: process.env.ADMIN_EMAIL,
+    subject,
+    html,
+  })
 }
 
 export async function updateRequestAction(formData: FormData, requestId: number) {
@@ -262,6 +292,20 @@ export async function updateRequestAction(formData: FormData, requestId: number)
       documents,
     },
   })
+
+  const emailData = {
+    ...rawData,
+    customer: user,
+  }
+
+  const subject = updateEmailSubject(emailData)
+  const html = updateRequestEmailHTML(emailData)
+
+  await payload.email.sendEmail({
+    to: process.env.ADMIN_EMAIL,
+    subject,
+    html,
+  })
 }
 
 export async function getRequestAction(publicId: string) {
@@ -295,7 +339,7 @@ export async function approveRequestAction(publicId: string) {
 
   const user = await getCustomerAction()
 
-  await payload.update({
+  const result = await payload.update({
     collection: 'requests',
     where: {
       publicId: {
@@ -310,6 +354,17 @@ export async function approveRequestAction(publicId: string) {
     },
   })
 
+  const request = result?.docs?.[0]
+
+  const subject = approveRequestAdminSubject(request as any)
+  const html = approveRequestAdminHTML(request as any)
+
+  await payload.email.sendEmail({
+    to: process.env.ADMIN_EMAIL,
+    subject,
+    html,
+  })
+
   revalidatePath(`/solicitacoes/${publicId}`)
 }
 
@@ -320,7 +375,7 @@ export async function confirmRequestDeliverytAction(publicId: string) {
 
   const user = await getCustomerAction()
 
-  await payload.update({
+  const result = await payload.update({
     collection: 'requests',
     where: {
       publicId: {
@@ -335,6 +390,18 @@ export async function confirmRequestDeliverytAction(publicId: string) {
         status: 'delivered',
       },
     },
+  })
+
+  const request = result?.docs?.[0]
+
+  const emailSubject = statusUpdateEmailSubject(request)
+  const emailHtml = statusUpdateEmailHTML(request)
+
+  await payload.email.sendEmail({
+    //@ts-ignore
+    to: process.env.ADMIN_EMAIL,
+    subject: emailSubject,
+    html: emailHtml,
   })
 
   revalidatePath(`/solicitacoes/${publicId}`)

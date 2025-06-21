@@ -4,6 +4,10 @@ import { getPayload } from 'payload'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/libs/nextAuth'
 import { UserSessionData } from '@/types/customers'
+import {
+  createUserNotificationSubject,
+  createUserNotificationHTML,
+} from '@/utils/emails/templates/createUserEmail'
 
 export async function createCustomerAction(data: any) {
   try {
@@ -11,9 +15,18 @@ export async function createCustomerAction(data: any) {
       config: configPromise,
     })
 
-    await payload.create({
+    const user = await payload.create({
       collection: 'customers',
       data,
+    })
+
+    const subject = createUserNotificationSubject(data)
+    const html = createUserNotificationHTML({ ...data, ...user }, process.env.ADMIN_URL || '')
+
+    await payload.email.sendEmail({
+      to: process.env.ADMIN_EMAIL,
+      subject,
+      html,
     })
   } catch (error) {
     throw error

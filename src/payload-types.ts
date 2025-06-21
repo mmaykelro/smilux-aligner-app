@@ -392,8 +392,6 @@ export interface Request {
    */
   diastemaInstructions?: string | null;
   generalInstructions?: string | null;
-  sendWhatsappLink: 'yes' | 'no';
-  whatsappNumber?: string | null;
   /**
    * Este é o status atual do tratamento. Este campo pode ser alterado a qualquer momento.
    */
@@ -641,8 +639,6 @@ export interface RequestsSelect<T extends boolean = true> {
   iprDetails?: T;
   diastemaInstructions?: T;
   generalInstructions?: T;
-  sendWhatsappLink?: T;
-  whatsappNumber?: T;
   status?: T;
   trackingLink?: T;
   payment?:

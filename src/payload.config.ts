@@ -4,6 +4,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { pt } from '@payloadcms/translations/languages/pt'
+import { resendAdapter } from '@payloadcms/email-resend'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -73,4 +74,9 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
+  email: resendAdapter({
+    defaultFromAddress: process.env.ADMIN_RESEND_EMAIL || '',
+    defaultFromName: process.env.ADMIN_EMAIL_NAME || '',
+    apiKey: process.env.RESEND_API_KEY || '',
+  }),
 })

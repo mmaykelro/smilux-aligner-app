@@ -24,6 +24,7 @@ import { formatOrderId } from '@/utils/text'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { confirmRequestDeliverytAction } from '@/actions/requests'
+import LoadingScreen from '@/components/loading-screen'
 
 type OrderStatus = 'not_sent' | 'preparing' | 'sent' | 'delivered'
 

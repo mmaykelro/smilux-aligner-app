@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Edit, ExternalLink, AlertCircle } from 'lucide-react'
 import { approveRequestAction } from '@/actions/requests'
+import LoadingScreen from '@/components/loading-screen'
 
 type RequestPreviewProps = {
   trackingLink?: string
@@ -103,6 +104,8 @@ const RequestPreview: React.FC<RequestPreviewProps> = ({
           </Link>
         </div>
       )}
+
+      {isLoading && <LoadingScreen isVisible={isLoading} />}
     </div>
   )
 }

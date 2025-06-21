@@ -4,6 +4,10 @@ import { ADMIN_REQUESTS_GROUP } from '@/constants/payload'
 import { relalidatePaths } from '@/utils/payload'
 import { validateUrl } from '@/utils/url'
 import { statusOptions } from '@/constants/requests'
+import {
+  statusUpdateEmailSubject,
+  statusUpdateEmailHTML,
+} from '@/utils/emails/templates/requestStatusUpdateEmail'
 
 const upperTeeth = [
   '11',
@@ -116,11 +120,54 @@ export const Requests: CollectionConfig = {
     ],
 
     afterChange: [
-      async ({ doc, req }) => {
+      async ({ doc, req, previousDoc, operation }) => {
         await relalidatePaths({
           req,
           paths: ['/', '/solicitaões', `/solicitacoes/${doc.slug}`],
         })
+
+        if (operation !== 'update') {
+          return
+        }
+
+        const statusChanged = doc.status !== previousDoc.status
+        const paymentStatusChanged = doc.payment?.status !== previousDoc.payment?.status
+        const trackingStatusChanged = doc.tracking?.status !== previousDoc.tracking?.status
+        const trackingLinkAdded = doc.trackingLink && !previousDoc.trackingLink
+
+        if (doc.status === 'completed') return
+
+        if (statusChanged || paymentStatusChanged || trackingStatusChanged || trackingLinkAdded) {
+          try {
+            const populatedDoc = await req.payload.findByID({
+              collection: 'requests',
+              id: doc.id,
+              depth: 1,
+            })
+
+            //@ts-ignore
+            if (!populatedDoc.customer || !populatedDoc.customer.email) {
+              req.payload.logger.warn(
+                `Solicitação ID ${doc.id} atualizada, mas não foi possível notificar o cliente (sem e-mail).`,
+              )
+              return
+            }
+
+            const emailSubject = statusUpdateEmailSubject(populatedDoc)
+            const emailHtml = statusUpdateEmailHTML(populatedDoc)
+
+            await req.payload.sendEmail({
+              //@ts-ignore
+              to: populatedDoc.customer.email,
+              subject: emailSubject,
+              html: emailHtml,
+            })
+          } catch (error) {
+            req.payload.logger.error(
+              `Falha ao enviar e-mail de atualização para solicitação ID ${doc.id}: ${error}`,
+            )
+          }
+        }
       },
     ],
   },
@@ -473,31 +520,6 @@ export const Requests: CollectionConfig = {
               name: 'generalInstructions',
               label: 'Orientações gerais de tratamento',
               type: 'textarea',
-            },
-            {
-              name: 'sendWhatsappLink',
-              label: 'Enviar link no whatsapp para visualização do planejamento virtual?',
-              type: 'radio',
-              required: true,
-              options: [
-                { label: 'Sim', value: 'yes' },
-                { label: 'Não', value: 'no' },
-              ],
-            },
-            {
-              name: 'whatsappNumber',
-              label: 'Qual o seu whatsapp com DDD?',
-              type: 'text',
-              //@ts-ignore
-              validate: (value, { data }) => {
-                if (data.sendWhatsappLink === 'yes' && !value) {
-                  return 'Campo obrigatório'
-                }
-                return true
-              },
-              admin: {
-                condition: (data) => data.sendWhatsappLink === 'yes',
-              },
             },
           ],
         },

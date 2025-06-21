@@ -69,13 +69,15 @@ export const GeneratePdfReportButton: React.FC<
 
         const [requestData] = request?.docs
 
+        const user = requestData?.customer
+
         const doc = new jsPDF()
         y = 20
 
         // --- CABEÇALHO ---
         doc.setFontSize(20)
         doc.text(
-          `Relatório de Solicitação ${formatOrderId(requestData.orderId) || 'N/A'}`,
+          `Relatório de Solicitação  ${requestData.orderId ? formatOrderId(requestData.orderId) : 'N/A'}`,
           105,
           y,
           {
@@ -101,6 +103,70 @@ export const GeneratePdfReportButton: React.FC<
             : 'N/A',
         )
         y += 5
+
+        const prefs = user?.clinicalPreferences
+
+        if (prefs) {
+          addSectionTitle(doc, 'Preferências Clínicas do Doutor(a)')
+
+          const passiveAlignersOptions = [
+            { label: 'Sim, adicione', value: 'sim_adicione' },
+            { label: 'Não adicione', value: 'nao_adicione' },
+          ]
+          const delayStageOptions = [
+            { label: 'A partir do estágio 1', value: 'estagio_1' },
+            { label: 'A partir do estágio 2', value: 'estagio_2' },
+            { label: 'A partir do estágio 3', value: 'estagio_3' },
+            { label: 'A partir do estágio 4', value: 'estagio_4' },
+          ]
+          const incisalLevelingOptions = [
+            { label: 'Sim, nivelar borda incisal', value: 'nivelar_borda' },
+            { label: 'Não nivelar borda incisal', value: 'nao_nivelar' },
+          ]
+          const elasticChainOptions = [
+            { label: 'Sim', value: 'sim' },
+            { label: 'Não', value: 'nao' },
+          ]
+          const distalizationOptions = [
+            { label: 'Sequencial (50% do movimento)', value: 'sequencial_50' },
+            { label: 'Em bloco (até 2mm)', value: 'em_bloco_ate_2mm' },
+          ]
+
+          addInfoRow(
+            doc,
+            'Alinhadores passivos',
+            getLabelFromValue(passiveAlignersOptions, prefs?.passiveAligners || ''),
+          )
+          addInfoRow(
+            doc,
+            'Atrasar início do IPR',
+            getLabelFromValue(delayStageOptions, prefs?.delayIPRStage || ''),
+          )
+          addInfoRow(doc, 'IPR máximo por face (mm)', prefs.maxIPR)
+          addInfoRow(
+            doc,
+            'Atrasar início dos Attachments',
+            getLabelFromValue(delayStageOptions, prefs?.delayAttachmentStage || ''),
+          )
+          addInfoRow(
+            doc,
+            'Nivelamento de borda incisal',
+            getLabelFromValue(incisalLevelingOptions, prefs?.incisalLeveling || ''),
+          )
+          addInfoRow(
+            doc,
+            'Cadeia elástica virtual',
+            getLabelFromValue(elasticChainOptions, prefs?.elasticChain || ''),
+          )
+          addInfoRow(
+            doc,
+            'Opções de distalização',
+            getLabelFromValue(distalizationOptions, prefs?.distalizationOptions || ''),
+          )
+          addInfoRow(doc, 'Posições para elásticos', prefs.elasticPositions?.join(', '))
+          addInfoRow(doc, 'Instruções especiais', prefs.specialInstructions)
+          y += 5
+        }
 
         // --- DEFINIÇÕES DO TRATAMENTO ---
         addSectionTitle(doc, 'Definições do Tratamento')

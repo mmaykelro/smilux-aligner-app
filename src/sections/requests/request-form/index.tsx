@@ -29,9 +29,11 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import RadioInput from '@/components/radio-input'
+import LoadingScreen from '@/components/loading-screen'
 import { Send, Trash2 } from 'lucide-react'
 import { createRequestAction, updateRequestAction } from '@/actions/requests'
 import { REQUIRED_FIELD } from '@/constants/errors'
+import { toast } from 'sonner'
 
 const upperTeeth = [
   '11',
@@ -127,7 +129,7 @@ const formSchema = z
           }
         })
       }),
-    archToTreat: z.enum(['both', 'upper', 'lower', 'none'], {
+    archToTreat: z.enum(['both', 'upper', 'lower'], {
       required_error: 'Selecione qual arcada tratar',
     }),
     upperJawMovementRestriction: z.array(z.string()).optional(),
@@ -158,15 +160,6 @@ const formSchema = z
     additionalInfo: z.string().optional(),
     diastemaInstructions: z.string().optional(),
     generalInstructions: z.string().min(1, REQUIRED_FIELD),
-    sendWhatsappLink: z.enum(['yes', 'no'], {
-      required_error: 'Selecione se deseja receber link no WhatsApp',
-    }),
-    whatsappNumber: z
-      .string()
-      .optional()
-      .refine((val) => !val || phoneRegex.test(val), {
-        message: 'Número do WhatsApp deve estar no formato (99) 99999-9999',
-      }),
   })
   .refine(
     (data) => {
@@ -179,54 +172,6 @@ const formSchema = z
     {
       message: 'Os detalhes do IPR são obrigatórios quando esta opção é selecionada.',
       path: ['iprDetails'],
-    },
-  )
-  .refine(
-    (data) => {
-      if (data?.sendWhatsappLink === 'yes' && !data?.whatsappNumber) {
-        return false
-      }
-      return true
-    },
-    {
-      message: "Número do WhatsApp é obrigatório quando selecionado 'Sim'",
-      path: ['whatsappNumber'],
-    },
-  )
-  .refine(
-    (data) => {
-      if (data?.archToTreat === 'none') {
-        return true
-      }
-
-      if (
-        (data?.archToTreat === 'upper' || data?.archToTreat === 'both') &&
-        (!data.upperJawMovementRestriction || data.upperJawMovementRestriction.length === 0)
-      ) {
-        return false
-      }
-      return true
-    },
-    {
-      message:
-        "Selecione pelo menos um dente para restrição de movimento na arcada superior ou marque 'Nenhum'",
-      path: ['upperJawMovementRestriction'],
-    },
-  )
-  .refine(
-    (data) => {
-      if (
-        (data?.archToTreat === 'lower' || data?.archToTreat === 'both') &&
-        (!data.lowerJawMovementRestriction || data.lowerJawMovementRestriction.length === 0)
-      ) {
-        return false
-      }
-      return true
-    },
-    {
-      message:
-        "Selecione pelo menos um dente para restrição de movimento na arcada inferior ou marque 'Nenhum'",
-      path: ['lowerJawMovementRestriction'],
     },
   )
 
@@ -257,8 +202,6 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
       iprDetails: request?.iprDetails || '',
       generalInstructions: request?.generalInstructions || '',
       additionalInfo: request?.additionalInfo || '',
-      sendWhatsappLink: request?.sendWhatsappLink,
-      whatsappNumber: request?.whatsappNumber || '',
       documents: request?.documents || [
         {
           documentName: 'Radiografia panorâmica',
@@ -364,12 +307,18 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
         if (!!request) {
           await updateRequestAction(formData, request.id)
+          toast.success('Solicitação atualizada com sucesso!')
         } else {
           await createRequestAction(formData)
+          toast.success('Solicitação realizada com sucesso!')
         }
 
         push('/solicitacoes')
-      } catch {}
+      } catch {
+        toast.error(
+          'Houve um erro ao tentar realizar a sua solicitação! Por favor tente novamente.',
+        )
+      }
     })
   }
 
@@ -381,7 +330,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
   useEffect(() => {
     if (request) {
       form.reset(request)
-      console.log(request)
+
       const element = document?.querySelector(`[name="additionalInfo"]`) as HTMLElement
 
       element.focus({ preventScroll: true })
@@ -536,10 +485,6 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                   name="archToTreat"
                   label="Tratar arcada"
                   options={[
-                    {
-                      label: 'Nenhum',
-                      value: 'none',
-                    },
                     {
                       label: 'Ambos',
                       value: 'both',
@@ -1071,46 +1016,6 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="sendWhatsappLink"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>
-                        Enviar link no whatsapp para visualização do planejamento virtual?
-                      </FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          className="flex flex-col space-y-2"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="yes" id="whatsapp_yes" />
-                            <Label htmlFor="whatsapp_yes">Sim</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="no" id="whatsapp_no" />
-                            <Label htmlFor="whatsapp_no">Não</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {watchedValues.sendWhatsappLink === 'yes' && (
-                  <Input
-                    {...register('whatsappNumber')}
-                    errors={errors}
-                    label="Qual o seu whatsapp com DDD?"
-                    placeholder="Digite seu número do whatsapp"
-                    mask="(__) _____-____"
-                    defaultValue=""
-                  />
-                )}
-
                 {!!request && (
                   <Textarea
                     label="Informações adicionais"
@@ -1135,6 +1040,8 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
           </form>
         </Form>
       </div>
+
+      {isLoading && <LoadingScreen isVisible={isLoading} />}
     </div>
   )
 }
