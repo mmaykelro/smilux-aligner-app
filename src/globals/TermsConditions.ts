@@ -31,6 +31,16 @@ export const TermsConditions: GlobalConfig = {
   },
   fields: [
     {
+      name: 'showTerms',
+      label: 'Exibir Termos de Serviço na página de cadastro do ususáro',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Marque para exibir os termos de serviço na página de login ou em outros locais do site.',
+      },
+    },
+    {
       name: 'content',
       label: {
         pt: 'Texto do termo de prestação de serviços',

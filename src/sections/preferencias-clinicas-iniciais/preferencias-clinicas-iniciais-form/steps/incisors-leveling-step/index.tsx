@@ -9,13 +9,14 @@ export const IncisorsLevelingStep: React.FC = () => {
         label="Nivelamento dos incisivos superiores"
         options={[
           {
-            label: 'Nivelar borda incisal',
-            value: 'nivelar_borda',
+            label: 'Nenhum',
+            value: 'none',
           },
           {
             label: 'Nivelar borda incisal',
-            value: 'nivelar_laterais_centrais',
+            value: 'nivelar_borda',
           },
+
           {
             label: 'Nivelar borda incisal - Laterais 0,5mm mais curtos que centrais',
             value: 'laterais_05mm',

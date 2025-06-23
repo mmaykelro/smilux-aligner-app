@@ -50,7 +50,10 @@ const LoginPage = async () => {
               </TabsContent>
 
               <TabsContent value="register">
-                <RegisterForm termsConditions={termsContitions.content} />
+                <RegisterForm
+                  termsConditions={termsContitions.content}
+                  showTerms={termsContitions?.showTerms as boolean}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>

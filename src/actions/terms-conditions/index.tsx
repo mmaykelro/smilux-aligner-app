@@ -11,6 +11,7 @@ export async function getRTermsConditions() {
     slug: 'terms-conditions',
     select: {
       content: true,
+      showTerms: true,
     },
   })
 }

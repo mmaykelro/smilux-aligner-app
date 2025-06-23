@@ -13,9 +13,10 @@ type RadioInputProps = {
   label?: string
   name: string
   options: Option[]
+  disabled?: boolean
 }
 
-const RadioInput: React.FC<RadioInputProps> = ({ label, name, options }) => {
+const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options }) => {
   const { control, clearErrors } = useFormContext()
   return (
     <FormField
@@ -31,6 +32,7 @@ const RadioInput: React.FC<RadioInputProps> = ({ label, name, options }) => {
             }}
             value={field.value}
             className="flex flex-col space-y-2"
+            disabled={disabled}
           >
             {options.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">

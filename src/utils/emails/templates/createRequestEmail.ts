@@ -327,10 +327,6 @@ export const createRequestEmailHTML = (doc: PopulatedRequest) => {
             <span style="${styles.label}">Orientações gerais de tratamento:</span>
             <p style="${styles.value}">${doc.generalInstructions || 'Nenhuma'}</p>
           </div>
-          <div style="${styles.fieldGroup}">
-            <span style="${styles.label}">Enviar link do planejamento por WhatsApp?</span>
-            <span style="${styles.value}">${doc.sendWhatsappLink === 'yes' ? `Sim, para o número: ${doc.whatsappNumber}` : 'Não'}</span>
-          </div>
         </div>
         <div style="${styles.footer}">
           <p>Este é um e-mail gerado automaticamente. Por favor, não responda.</p>

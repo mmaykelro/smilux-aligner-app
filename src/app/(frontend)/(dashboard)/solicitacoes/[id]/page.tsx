@@ -1,5 +1,5 @@
 import { getRequestAction } from '@/actions/requests'
-import PageHeader from '@/constants/page-header'
+import PageHeader from '@/components/page-header'
 import RequestPreview from '@/sections/requests/request-preview'
 import RequestrPaymentOrderForm from '@/sections/requests/request-payment-order-form'
 import RequestStatusStepper from '@/sections/requests/request-status-stepper'

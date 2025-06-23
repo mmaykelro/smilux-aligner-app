@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/libs/nextAuth'
 import { UserSessionData } from '@/types/customers'
+import { fileToBuffer } from '@/utils/files'
 import {
   createUserNotificationSubject,
   createUserNotificationHTML,
@@ -41,6 +42,29 @@ export async function updateCustomerAction(data: any) {
       config: configPromise,
     })
 
+    if (data?.profileImage instanceof File) {
+      const buffer = await fileToBuffer(data.profileImage)
+
+      const image = await payload.create({
+        collection: 'media',
+        data: {
+          alt: `Imagem de perfil de ${user.name}`,
+        },
+        //@ts-ignore
+        file: {
+          data: buffer,
+          name: data.profileImage.name,
+          mimetype: data.profileImage.type,
+        },
+      })
+
+      data.profileImage = image.id
+    }
+
+    if (!data.profileImage) {
+      data.profileImage = null
+    }
+
     await payload.update({
       collection: 'customers',
       id: user.id,
@@ -57,5 +81,17 @@ export async function updateCustomerAction(data: any) {
 export async function getCustomerAction() {
   const session = await getServerSession(authOptions)
 
-  return session?.user as UserSessionData
+  const payload = await getPayload({
+    config: configPromise,
+  })
+
+  const user = await payload.findByID({
+    collection: 'customers',
+    //@ts-ignore
+    id: session?.user?.id,
+    depth: 2,
+    user: session?.user,
+  })
+
+  return user as UserSessionData
 }

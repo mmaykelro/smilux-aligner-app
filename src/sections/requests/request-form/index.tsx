@@ -356,6 +356,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                   placeholder="Digite o nome completo do paciente"
                   {...register('patient')}
                   errors={errors}
+                  disabled={!!request}
                 />
               </CardContent>
             </Card>
@@ -405,13 +406,14 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                     <div className="flex flex-row justify-between">
                                       <span>{`Arquivo - ${document.documentName}`}</span>
 
-                                      {!!watch(`documents.${index}.documentFile`) && (
+                                      {!!watch(`documents.${index}.documentFile`) && !request && (
                                         <Tooltip>
                                           <TooltipTrigger>
                                             <Button
                                               type="button"
                                               variant="outline"
                                               size="sm"
+                                              disabled={!!request}
                                               onClick={() =>
                                                 handleRemoveDocument({
                                                   field,
@@ -449,6 +451,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                       field.onChange(newDocuments)
                                     }
                                   }}
+                                  disabled={!!request}
                                 />
                                 {document.documentFile && (
                                   <p className="text-sm text-gray-500 mt-1">
@@ -498,6 +501,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       value: 'lower',
                     },
                   ]}
+                  disabled={!!request}
                 />
 
                 {shouldShowUpperFields && (
@@ -525,6 +529,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                     field.onChange(current.filter((t) => t !== tooth))
                                   }
                                 }}
+                                disabled={!!request}
                               />
                               <Label htmlFor={`upper-${tooth}`} className="text-sm">
                                 {tooth}
@@ -563,6 +568,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                     field.onChange(current.filter((t) => t !== tooth))
                                   }
                                 }}
+                                disabled={!!request}
                               />
                               <Label htmlFor={`lower-${tooth}`} className="text-sm">
                                 {tooth}
@@ -599,6 +605,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                             onValueChange={field.onChange}
                             value={field.value}
                             className="flex flex-col space-y-2"
+                            disabled={!!request}
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="improve_canine" id="improve_canine_upper" />
@@ -643,6 +650,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                             onValueChange={field.onChange}
                             value={field.value}
                             className="flex flex-col space-y-2"
+                            disabled={!!request}
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="improve_canine" id="improve_canine_lower" />
@@ -686,7 +694,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                         2mm.
                       </FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Descreva as orientações específicas..." {...field} />
+                        <Textarea
+                          disabled={!!request}
+                          placeholder="Descreva as orientações específicas..."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -703,7 +715,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CUT para ELÁSTICO no canino</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={!!request}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />
@@ -727,7 +743,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CUT para BOTÃO no canino</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={!!request}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />
@@ -751,7 +771,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CUT para ELÁSTICO no molar</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={!!request}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />
@@ -775,7 +799,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CUT para BOTÃO no molar</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={!!request}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />
@@ -804,6 +832,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                           <Textarea
                             placeholder="Descreva as orientações específicas dos recortes..."
                             {...field}
+                            disabled={!!request}
                           />
                         </FormControl>
                         <FormMessage />
@@ -832,6 +861,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                           onValueChange={field.onChange}
                           value={field.value}
                           className="flex flex-col space-y-2"
+                          disabled={!!request}
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id="attachments_yes" />
@@ -871,6 +901,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                     field.onChange(current.filter((t) => t !== tooth))
                                   }
                                 }}
+                                disabled={!!request}
                               />
                               <Label htmlFor={`no-attach-upper-${tooth}`} className="text-sm">
                                 {tooth}
@@ -907,6 +938,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                                     field.onChange(current.filter((t) => t !== tooth))
                                   }
                                 }}
+                                disabled={!!request}
                               />
                               <Label htmlFor={`no-attach-lower-${tooth}`} className="text-sm">
                                 {tooth}
@@ -932,6 +964,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                           onValueChange={field.onChange}
                           value={field.value}
                           className="flex flex-col space-y-2"
+                          disabled={!!request}
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id="ipr_yes" />
@@ -965,6 +998,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                       {...register('iprDetails')}
                       errors={errors}
                       placeholder="Descreva os detalhes do IPR..."
+                      disabled={!!request}
                     />
 
                     <FormMessage />
@@ -995,6 +1029,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                         <Textarea
                           placeholder="Descreva as instruções para diastemas..."
                           {...field}
+                          disabled={!!request}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1009,7 +1044,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
                     <FormItem>
                       <FormLabel>Orientações gerais de tratamento</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Descreva as orientações gerais..." {...field} />
+                        <Textarea
+                          placeholder="Descreva as orientações gerais..."
+                          {...field}
+                          disabled={!!request}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

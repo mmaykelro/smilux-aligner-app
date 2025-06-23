@@ -6,6 +6,7 @@ import { statusOptions } from '@/constants/requests'
 import { Pagination } from '@/types'
 import { parseDateForQuery, getNextDay } from '@/utils/date'
 import { revalidatePath } from 'next/cache'
+import { fileToBuffer } from '@/utils/files'
 import {
   createEmailSubject,
   createRequestEmailHTML,
@@ -26,11 +27,6 @@ import {
 type StatusValue = (typeof statusOptions)[number]['value']
 
 type StatusCounts = Record<StatusValue, number>
-
-async function fileToBuffer(file: File): Promise<Buffer> {
-  const arrayBuffer = await file.arrayBuffer()
-  return Buffer.from(arrayBuffer)
-}
 
 type RequestsActions = {
   pagination?: Pagination

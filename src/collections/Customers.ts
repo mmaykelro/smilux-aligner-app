@@ -31,7 +31,17 @@ export const Customers: CollectionConfig = {
     delete: () => true,
   },
 
-  hooks: {},
+  hooks: {
+    beforeChange: [
+      ({ data, operation }) => {
+        if (operation === 'create') {
+          data.termsAcceptanceDate = new Date().toISOString()
+        }
+
+        return data
+      },
+    ],
+  },
 
   fields: [
     {
@@ -73,6 +83,25 @@ export const Customers: CollectionConfig = {
           Field: {
             path: '/components/payload/masked-phone-input/index.tsx#MaskedPhoneInput',
           },
+        },
+      },
+    },
+    {
+      name: 'profileImage',
+      label: 'Foto de Perfil',
+      type: 'upload',
+      relationTo: 'media',
+    },
+
+    {
+      name: 'termsAcceptanceDate',
+      type: 'date',
+      label: 'Data de aceite dos termos de prestação de serviços',
+      admin: {
+        readOnly: true,
+        description: 'Data e hora em que o usuário aceitou os termos ao se cadastrar.',
+        date: {
+          displayFormat: 'dd/MM/yyyy HH:mm',
         },
       },
     },
@@ -228,13 +257,14 @@ export const Customers: CollectionConfig = {
           type: 'radio',
           options: [
             {
+              label: 'Nenhum',
+              value: 'none',
+            },
+            {
               label: 'Nivelar borda incisal',
               value: 'nivelar_borda',
             },
-            {
-              label: 'Nivelar borda incisal - Nivelar laterais com centrais',
-              value: 'nivelar_laterais_centrais',
-            },
+
             {
               label: 'Nivelar borda incisal - Laterais 0,5mm mais curtos que centrais',
               value: 'laterais_05mm',

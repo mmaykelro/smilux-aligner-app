@@ -178,6 +178,11 @@ export interface Customer {
   name: string;
   cpf: string;
   phone: string;
+  profileImage?: (number | null) | Media;
+  /**
+   * Data e hora em que o usuário aceitou os termos ao se cadastrar.
+   */
+  termsAcceptanceDate?: string | null;
   cro: {
     number: string;
     state:
@@ -256,7 +261,7 @@ export interface Customer {
      */
     maxIPR?: string | null;
     delayAttachmentStage?: ('nao_atrase' | 'estagio_1' | 'estagio_2' | 'estagio_3' | 'estagio_4' | 'estagio_5') | null;
-    incisalLeveling?: ('nivelar_borda' | 'nivelar_laterais_centrais' | 'laterais_05mm' | 'margem_gengival') | null;
+    incisalLeveling?: ('none' | 'nivelar_borda' | 'laterais_05mm' | 'margem_gengival') | null;
     elasticChain?: ('nao' | 'sim_3_3' | 'sim_6_6') | null;
     distalizationOptions?: ('sequencial_50' | '2by2') | null;
     elasticPositions?:
@@ -314,6 +319,27 @@ export interface Customer {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * Gerencie os arquivos de mídia do site
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Formulários de prescrição para novos tratamentos com alinhadores.
@@ -435,27 +461,6 @@ export interface Request {
   createdAt: string;
 }
 /**
- * Gerencie os arquivos de mídia do site
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -554,6 +559,8 @@ export interface CustomersSelect<T extends boolean = true> {
   name?: T;
   cpf?: T;
   phone?: T;
+  profileImage?: T;
+  termsAcceptanceDate?: T;
   cro?:
     | T
     | {
@@ -719,6 +726,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface TermsCondition {
   id: number;
+  /**
+   * Marque para exibir os termos de serviço na página de login ou em outros locais do site.
+   */
+  showTerms?: boolean | null;
   content: {
     root: {
       type: string;
@@ -742,6 +753,7 @@ export interface TermsCondition {
  * via the `definition` "terms-conditions_select".
  */
 export interface TermsConditionsSelect<T extends boolean = true> {
+  showTerms?: T;
   content?: T;
   updatedAt?: T;
   createdAt?: T;

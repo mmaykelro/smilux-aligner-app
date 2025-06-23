@@ -371,10 +371,6 @@ export const updateRequestEmailHTML = (doc: PopulatedRequest) => {
             <span style="${styles.label}">Orientações gerais de tratamento:</span>
             <p style="${styles.value}">${doc.generalInstructions || 'Nenhuma'}</p>
           </div>
-          <div style="${styles.fieldGroup}">
-            <span style="${styles.label}">Enviar link do planejamento por WhatsApp?</span>
-            <span style="${styles.value}">${doc.sendWhatsappLink === 'yes' ? `Sim, para o número: ${doc.whatsappNumber}` : 'Não'}</span>
-          </div>
 
           <!-- Pagamento e Envio -->
           <h2 style="${styles.sectionTitle}">Status de Pagamento e Envio</h2>

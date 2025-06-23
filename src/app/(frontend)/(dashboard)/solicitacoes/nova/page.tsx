@@ -1,5 +1,5 @@
 import React from 'react'
-import PageHeader from '@/constants/page-header'
+import PageHeader from '@/components/page-header'
 import RequestForm from '@/sections/requests/request-form'
 
 const NovaSolicitacaoPage: React.FC = () => {

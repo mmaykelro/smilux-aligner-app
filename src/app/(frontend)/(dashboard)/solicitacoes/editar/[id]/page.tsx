@@ -1,5 +1,5 @@
 import { getRequestAction } from '@/actions/requests'
-import PageHeader from '@/constants/page-header'
+import PageHeader from '@/components/page-header'
 import RequestForm from '@/sections/requests/request-form'
 
 type PageProps = Promise<{

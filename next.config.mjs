@@ -4,7 +4,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '100mb',
+      bodySizeLimit: '300mb',
     },
   },
 }

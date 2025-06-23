@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import RequestsTableFilters from '@/sections/requests/requests-table-filters'
 import RequestTable from '@/sections/requests/request-table'
 import { Plus } from 'lucide-react'
-import PageHeader from '@/constants/page-header'
+import PageHeader from '@/components/page-header'
 import { getRequestsAction, getRequestsStatusAction } from '@/actions/requests'
 
 type SearchParams = Promise<{ [key: string]: string }>

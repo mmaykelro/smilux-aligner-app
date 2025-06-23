@@ -174,7 +174,7 @@ export const statusUpdateEmailHTML = (doc: Request): string => {
 
         </div>
         <div style="${styles.footer}">
-          <p>Atenciosamente,<br>Equipe [Nome da Sua Empresa]</p>
+          <p>Atenciosamente,<br>Equipe Smilux</p>
         </div>
       </div>
     </body>

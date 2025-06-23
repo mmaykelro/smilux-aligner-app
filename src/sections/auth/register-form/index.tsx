@@ -92,9 +92,10 @@ export type SchemaFormData = z.infer<typeof schema>
 
 type Props = {
   termsConditions: object
+  showTerms: boolean
 }
 
-const RegisterForm: React.FC<Props> = ({ termsConditions }) => {
+const RegisterForm: React.FC<Props> = ({ termsConditions, showTerms }) => {
   const [uf, setUf] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsRead, setTermsRead] = useState(false)
@@ -329,65 +330,66 @@ const RegisterForm: React.FC<Props> = ({ termsConditions }) => {
         />
       </InputGroup>
 
-      <div className="space-y-4">
-        <div className="flex items-start space-x-2">
-          <Checkbox
-            id="terms"
-            checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-            disabled={!termsRead}
-          />
-          <div className="grid gap-1.5 leading-none">
-            <Label
-              htmlFor="terms"
-              className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                !termsRead ? 'text-gray-400' : ''
-              }`}
-            >
-              Aceito os{' '}
-              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="link" className="p-0 h-auto text-blue-600 underline">
-                    Termos de Prestação de Serviços
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="w-full max-h-[80vh]">
-                  <DialogHeader>
-                    <DialogTitle className="flex text-center items-center gap-2 text-primary">
-                      <FileText className="h-5 w-5" />
-                      TERMO DE PRESTAÇÃO DE SERVIÇOS SMILUX ALINHADORES®
-                    </DialogTitle>
-                  </DialogHeader>
-                  <ScrollArea className="h-96 w-full rounded-md border p-4">
-                    <RichText data={termsConditions} />
-                  </ScrollArea>
-                  <div className="flex justify-end gap-2">
-                    <Button onClick={handleTermsModalClose}>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Li e Compreendi
+      {!!showTerms && (
+        <div className="space-y-4">
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms"
+              checked={termsAccepted}
+              onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+              disabled={!termsRead}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="terms"
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                  !termsRead ? 'text-gray-400' : ''
+                }`}
+              >
+                Aceito os{' '}
+                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="p-0 h-auto text-blue-600 underline">
+                      Termos de Prestação de Serviços
                     </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </Label>
-            {!termsRead && (
-              <p className="text-xs text-gray-500">Você deve ler os termos antes de aceitar</p>
-            )}
+                  </DialogTrigger>
+                  <DialogContent className="w-full max-h-[80vh]">
+                    <DialogHeader>
+                      <DialogTitle className="flex text-center items-center gap-2 text-primary">
+                        <FileText className="h-5 w-5" />
+                        TERMO DE PRESTAÇÃO DE SERVIÇOS SMILUX ALINHADORES®
+                      </DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="h-96 w-full rounded-md border p-4">
+                      <RichText data={termsConditions} />
+                    </ScrollArea>
+                    <div className="flex justify-end gap-2">
+                      <Button onClick={handleTermsModalClose}>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Li e Compreendi
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </Label>
+              {!termsRead && (
+                <p className="text-xs text-gray-500">Você deve ler os termos antes de aceitar</p>
+              )}
+            </div>
           </div>
+
+          {!termsAccepted && termsRead && (
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Você deve aceitar os termos para continuar com o cadastro.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
-
-        {!termsAccepted && termsRead && (
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Você deve aceitar os termos para continuar com o cadastro.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-
+      )}
       <Button
-        disabled={isLoadingSubmit || !termsAccepted}
+        disabled={isLoadingSubmit || (showTerms ? !termsAccepted : false)}
         onClick={handleSubmit(onSubmit)}
         className="w-full "
       >
