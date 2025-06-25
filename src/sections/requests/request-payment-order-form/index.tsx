@@ -79,6 +79,9 @@ export default function RequestrPaymentOrderForm({ title, pixUrl, cardUrl, onClo
               <TabsTrigger value="pix" className="flex items-center gap-2">
                 <QrCode className="h-4 w-4" />
                 PIX
+                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold ml-1">
+                  SUPER DESCONTO
+                </span>
               </TabsTrigger>
               <TabsTrigger value="card" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -94,6 +97,14 @@ export default function RequestrPaymentOrderForm({ title, pixUrl, cardUrl, onClo
                     Escaneie o QR Code ou copie o código PIX para finalizar seu pagamento
                   </p>
                 </div>
+
+                <Alert className="border-green-200 bg-green-50">
+                  <QrCode className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    <span className="font-semibold">🎉 Super Desconto PIX!</span> Pague com PIX e
+                    ganhe desconto especial na sua compra!
+                  </AlertDescription>
+                </Alert>
 
                 {!pixUrl && (
                   <Alert>

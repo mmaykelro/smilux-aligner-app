@@ -1,8 +1,8 @@
 'use server'
 import configPromise from '@payload-config'
-import { getPayload, Where } from 'payload'
+import { getPayload } from 'payload'
 
-export async function getRTermsConditions() {
+export async function getTermsConditions() {
   const payload = await getPayload({
     config: configPromise,
   })

@@ -4,10 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import LoginForm from '@/sections/auth/login-form'
 import RegisterForm from '@/sections/auth/register-form'
-import { getRTermsConditions } from '@/actions/terms-conditions'
+import { getTermsConditions } from '@/actions/terms-conditions'
 
 const LoginPage = async () => {
-  const termsContitions = await getRTermsConditions()
+  const termsContitions = await getTermsConditions()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center p-4">

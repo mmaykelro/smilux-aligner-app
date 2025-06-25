@@ -133,11 +133,12 @@ export const Requests: CollectionConfig = {
         const statusChanged = doc.status !== previousDoc.status
         const paymentStatusChanged = doc.payment?.status !== previousDoc.payment?.status
         const trackingStatusChanged = doc.tracking?.status !== previousDoc.tracking?.status
-        const trackingLinkAdded = doc.trackingLink && !previousDoc.trackingLink
+        const trackingLinkChanged =
+          doc?.trackingLink && doc.trackingLink !== previousDoc.trackingLink
 
         if (doc.status === 'completed') return
 
-        if (statusChanged || paymentStatusChanged || trackingStatusChanged || trackingLinkAdded) {
+        if (statusChanged || paymentStatusChanged || trackingStatusChanged || trackingLinkChanged) {
           try {
             const populatedDoc = await req.payload.findByID({
               collection: 'requests',
@@ -291,6 +292,17 @@ export const Requests: CollectionConfig = {
           relationTo: 'media',
           label: 'Arquivo do Documento',
           required: true,
+        },
+        {
+          name: 'downloadAction',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: {
+                path: '/components/payload/download-file-button/index.tsx#DownloadButton',
+              },
+            },
+          },
         },
       ],
     },
