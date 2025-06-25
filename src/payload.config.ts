@@ -74,6 +74,7 @@ export default buildConfig({
         token: process.env.UPLOADTHING_TOKEN,
         acl: 'public-read',
       },
+      clientUploads: true,
     }),
   ],
   email: resendAdapter({
