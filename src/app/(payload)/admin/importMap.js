@@ -32,7 +32,7 @@ import { TextColorFeatureClient as TextColorFeatureClient_bdd62b616b227465b00e7f
 import { YoutubeFeatureClient as YoutubeFeatureClient_bdd62b616b227465b00e7faff4bdc6d8 } from 'payloadcms-lexical-ext/client'
 import { Icon as Icon_2d07a75cfff87b2e0d5ec901057a0056 } from '../../../components/payload/icon/index.tsx'
 import { Logo as Logo_00a464cfce46832e044f02d49d211822 } from '../../../components/payload/logo/index.tsx'
-import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
+import { UploadthingClientUploadHandler as UploadthingClientUploadHandler_749dcaa11bb61b873d113cb6c609bc10 } from '@payloadcms/storage-uploadthing/client'
 
 export const importMap = {
   "/components/payload/masked-phone-input/index.tsx#MaskedPhoneInput": MaskedPhoneInput_0495fa4eea39b9544e375cdd1cd475ae,
@@ -69,5 +69,5 @@ export const importMap = {
   "payloadcms-lexical-ext/client#YoutubeFeatureClient": YoutubeFeatureClient_bdd62b616b227465b00e7faff4bdc6d8,
   "/components/payload/icon/index.tsx#Icon": Icon_2d07a75cfff87b2e0d5ec901057a0056,
   "/components/payload/logo/index.tsx#Logo": Logo_00a464cfce46832e044f02d49d211822,
-  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
+  "@payloadcms/storage-uploadthing/client#UploadthingClientUploadHandler": UploadthingClientUploadHandler_749dcaa11bb61b873d113cb6c609bc10
 }

@@ -1,4 +1,3 @@
-// storage-adapter-import-placeholder
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
