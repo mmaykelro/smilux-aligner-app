@@ -6,8 +6,9 @@ import {
   HighlightColorFeature,
   BgColorFeature,
 } from 'payloadcms-lexical-ext'
-import { relalidatePaths } from '@/utils/payload'
+
 import { ADMIN_SITE_GROUP } from '@/constants/payload'
+import { revalidatePath } from 'next/cache'
 
 export const TermsConditions: GlobalConfig = {
   slug: 'terms-conditions',
@@ -17,11 +18,8 @@ export const TermsConditions: GlobalConfig = {
   },
   hooks: {
     afterChange: [
-      async ({ req }) => {
-        await relalidatePaths({
-          req,
-          paths: ['/login'],
-        })
+      async () => {
+        revalidatePath('/login')
       },
     ],
   },
