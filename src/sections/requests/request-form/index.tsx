@@ -71,22 +71,8 @@ const lowerTeeth = [
   '47',
 ]
 
-const phoneRegex = /^\([1-9]{2}\)\s?9?\d{4}-\d{4}$/
-
 const mediaFileSchema = z.object({
   id: z.number().or(z.string()),
-  alt: z.string(),
-  updatedAt: z.string().datetime(),
-  createdAt: z.string().datetime(),
-  url: z.string(),
-  thumbnailURL: z.string().nullable(),
-  filename: z.string(),
-  mimeType: z.string().nullable(),
-  filesize: z.number().nullable(),
-  width: z.number().nullable(),
-  height: z.number().nullable(),
-  focalX: z.number().optional(),
-  focalY: z.number().optional(),
 })
 
 const formSchema = z
