@@ -2,10 +2,14 @@
 import { destroyCookie } from 'nookies'
 import { signOut, signIn } from 'next-auth/react'
 import { COOKIE_TOKEN } from '@/constants/auth'
+import { redirect } from 'next/navigation'
 
 export function logout() {
   destroyCookie(undefined, COOKIE_TOKEN)
-  signOut()
+  signOut({
+    redirect: false,
+  })
+  redirect('/login')
 }
 
 export async function login(values: any) {
