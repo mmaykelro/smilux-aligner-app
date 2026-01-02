@@ -5,7 +5,7 @@ import { getToken } from 'next-auth/jwt'
 import { jwtDecode } from 'jwt-decode'
 import { COOKIE_TOKEN } from '@/constants/auth'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const token = (await getToken({ req, secret: process.env.SECRET })) as any
   const apiToken = (await cookies()).get(COOKIE_TOKEN)?.value ?? ''
 
