@@ -27,3 +27,14 @@ export const getNestedValue = <T extends object>(
 
   return current
 }
+
+export function smoothFocus(element: HTMLElement) {
+  element.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+  })
+
+  setTimeout(() => {
+    element.focus({ preventScroll: true })
+  }, 300)
+}

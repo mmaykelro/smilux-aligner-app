@@ -26,6 +26,7 @@ const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options 
         <FormItem>
           {!!label && <Label className="text-base font-medium">{label}</Label>}
           <RadioGroup
+            data-name={name}
             onValueChange={(value) => {
               clearErrors(name)
               field.onChange(value)
@@ -34,9 +35,13 @@ const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options 
             className="flex flex-col space-y-2"
             disabled={disabled}
           >
-            {options.map((option) => (
+            {options.map((option, index) => (
               <div key={option.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={option.value} id={option.value} />
+                <RadioGroupItem
+                  ref={index === 0 ? field.ref : undefined}
+                  value={option.value}
+                  id={option.value}
+                />
                 <Label htmlFor={option.value}>{option.label}</Label>
               </div>
             ))}

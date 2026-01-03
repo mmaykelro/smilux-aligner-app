@@ -37,7 +37,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, name, options }) => {
               field.onChange(value)
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger ref={field.ref} data-name={name}>
               <SelectValue placeholder="Selecione uma opção" />
             </SelectTrigger>
             <SelectContent>

@@ -39,19 +39,7 @@ const LoginForm: React.FC = () => {
         const user = await getCustomerAction()
 
         if (user?.isActive) {
-          if (!user?.isRegisterComplete) {
-            push('/preferencias-clinicas-iniciais')
-
-            return
-          }
-
           push('/')
-
-          return
-        }
-
-        if (!user?.isRegisterComplete) {
-          push('/preferencias-clinicas-iniciais')
 
           return
         }
