@@ -163,7 +163,7 @@ const RegisterForm: React.FC<Props> = ({ termsConditions, showTerms }) => {
 
         await createCustomerAction(values)
         await login({ email, password })
-        push('/preferencias-clinicas-iniciais')
+        push('/aguardando-aprovacao')
       } catch (error: any) {
         if (error?.message?.includes('email')) {
           setError('email', { message: EMAIL_ALREADY_IN_USE })
