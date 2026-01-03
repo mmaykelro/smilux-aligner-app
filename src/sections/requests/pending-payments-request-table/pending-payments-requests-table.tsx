@@ -115,7 +115,7 @@ export default function PendingPaymentsRequestsTable({ requests, totalPages }: P
             {!filteredAndSortedRequests?.length ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                  Nenhuma solicitação encontrada
+                  Nenhum pagamento pendente encontrado
                 </TableCell>
               </TableRow>
             ) : (
