@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import RequestCard from '@/components/request-card'
+import PendingsPayentsWidget from '@/sections/dashboard/pendings-payments-widget'
 import { getCustomerAction } from '@/actions/customer'
 import { getRequestsStatusAction } from '@/actions/requests'
 import { redirect } from 'next/navigation'
@@ -29,6 +30,8 @@ export default async function HomePage() {
           </Button>
         </div>
       </div>
+
+      <PendingsPayentsWidget amount={requests?.completed_not_paid} />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Link href="/solicitacoes/?status=verificando_documentacao">

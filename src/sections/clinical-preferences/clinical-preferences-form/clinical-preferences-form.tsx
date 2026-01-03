@@ -10,7 +10,7 @@ import SelectInput from '@/components/select-input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
-import { Check } from 'lucide-react'
+import { Check, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import { updateCustomerAction } from '@/actions/customer'
 import CardInputForm from '@/sections/clinical-preferences/clinical-preferences-form/card-input-form'
@@ -386,9 +386,9 @@ export default function ClinicalPreferencesForm({ defaultValues }: Props) {
           <Button
             onClick={handleSubmit(onSubmit, onError)}
             disabled={isLoading}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white flex items-center gap-2 w-full md:w-fit"
+            className="w-full md:w-fit"
           >
-            <Check className="w-4 h-4" />
+            <Save className="w-4 h-4" />
             Salvar Preferências
           </Button>
         </div>

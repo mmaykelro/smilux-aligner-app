@@ -543,7 +543,7 @@ export const Requests: CollectionConfig = {
       label: 'Status da Prescrição',
       type: 'select',
       required: true,
-      options: statusOptions,
+      options: statusOptions.filter(({ value }) => value !== 'completed_not_paid'),
       defaultValue: 'documentation_check',
       admin: {
         position: 'sidebar',

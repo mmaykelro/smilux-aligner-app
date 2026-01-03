@@ -33,6 +33,9 @@ type RequestsActions = {
   filters?: {
     patient?: string
     status?: string
+    payment?: {
+      status: 'paid' | 'not_paid'
+    }
     from?: string
     to?: string
   }
@@ -76,6 +79,12 @@ export async function getRequestsAction({ pagination, filters }: RequestsActions
     if (filters?.patient) {
       where.patient = {
         like: filters.patient,
+      }
+    }
+
+    if (filters?.payment?.status) {
+      where['payment.status'] = {
+        equals: filters.payment.status,
       }
     }
 
@@ -142,6 +151,9 @@ export async function getRequestsStatusAction() {
       },
       select: {
         status: true,
+        payment: {
+          status: true,
+        },
       },
       pagination: false,
     })
@@ -154,6 +166,10 @@ export async function getRequestsStatusAction() {
 
   const finalCounts: StatusCounts = docs.reduce((accumulator, currentItem) => {
     accumulator[currentItem.status]++
+
+    if (currentItem.payment.status === 'not_paid' && currentItem.status === 'completed') {
+      accumulator['completed_not_paid']++
+    }
 
     return accumulator
   }, initialCounts)

@@ -161,11 +161,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
 
           {/* Botões */}
           <div className="flex space-x-4 pt-4">
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 bg-blue-500 hover:bg-blue-600"
-            >
+            <Button type="submit" disabled={isLoading} className="flex-1">
               <div className="flex items-center space-x-2">
                 <Save className="w-4 h-4" />
                 <span>Salvar Alterações</span>

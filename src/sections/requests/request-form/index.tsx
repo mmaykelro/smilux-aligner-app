@@ -1053,11 +1053,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
             {/* Submit Button */}
             <div className="flex justify-end space-x-4">
-              <Button
-                disabled={isLoading || request?.status === 'completed'}
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700"
-              >
+              <Button disabled={isLoading || request?.status === 'completed'} type="submit">
                 <Send className="h-4 w-4 mr-2" />
                 {!!request ? 'Editar e reenviar solicitação' : 'Enviar solicitação'}
               </Button>

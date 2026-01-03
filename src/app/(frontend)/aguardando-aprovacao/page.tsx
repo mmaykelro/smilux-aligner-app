@@ -50,7 +50,7 @@ const AguardandoAprovacaoPage: React.FC = async () => {
             Sua conta foi criada e está aguardando aprovação. Para liberar seu acesso, por favor,
             entre em contato com o nosso suporte.
           </p>
-          <Button className="w-full bg-[#007bff] hover:bg-[#0056b3] text-white" asChild>
+          <Button className="w-full" asChild>
             <Link href={whatsappMessage} target="_blank">
               Entrar em Contato com o Suporte
             </Link>

@@ -51,6 +51,7 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
   const [sortField, setSortField] = useState<keyof Request>('createdAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [payment, setPayment] = useState<Request['payment'] | null>()
 
   const searchParams = useSearchParams()
 
@@ -95,8 +96,14 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
     return variantMap[status] || ''
   }
 
+  function handleOpenPaymentModal(isOpen: boolean, payment: Request['payment']) {
+    setIsPaymentModalOpen(isOpen)
+    setPayment(payment)
+  }
+
   function handleClosePaymentModal() {
     setIsPaymentModalOpen(false)
+    setPayment(null)
   }
 
   return (
@@ -175,7 +182,9 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
                             <TooltipTrigger>
                               <Dialog
                                 open={isPaymentModalOpen}
-                                onOpenChange={setIsPaymentModalOpen}
+                                onOpenChange={(isOpen) => {
+                                  handleOpenPaymentModal(isOpen, item?.payment)
+                                }}
                               >
                                 <DialogTrigger>
                                   <Button variant="outline" size="sm" className="h-8 w-8 p-0">
@@ -191,8 +200,8 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
                                   </DialogHeader>
 
                                   <RequestPaymentOrderForm
-                                    pixUrl={item?.payment?.pixUrl || ''}
-                                    cardUrl={item?.payment?.cardUrl || ''}
+                                    pixUrl={payment?.pixUrl || ''}
+                                    cardUrl={payment?.cardUrl || ''}
                                     onClose={handleClosePaymentModal}
                                   />
                                 </DialogContent>
