@@ -21,7 +21,7 @@ export default async function SolicitacaoPage({ params }: { params: PageProps })
         description={`Paciente: ${request.patient}`}
       />
 
-      <div className="flex-1 space-y-4  p-4 lg:p-6">
+      <div className="flex-1 space-y-4  p-4 lg:py-6 lg:px-20">
         {request.status === 'completed' && request.payment.status === 'not_paid' && (
           <RequestrPaymentOrderForm
             title="Realize o seu pagamento"

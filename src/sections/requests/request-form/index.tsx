@@ -327,7 +327,7 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Form Content */}
-      <div className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="p-4 lg:py-6 lg:px-20">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-8">
             {/* Basic Information */}
@@ -1053,7 +1053,11 @@ const RequestForm: React.FC<{ request?: RequestFormData & { status: string; id: 
 
             {/* Submit Button */}
             <div className="flex justify-end space-x-4">
-              <Button disabled={isLoading || request?.status === 'completed'} type="submit">
+              <Button
+                className="w-full md:w-fit"
+                disabled={isLoading || request?.status === 'completed'}
+                type="submit"
+              >
                 <Send className="h-4 w-4 mr-2" />
                 {!!request ? 'Editar e reenviar solicitação' : 'Enviar solicitação'}
               </Button>

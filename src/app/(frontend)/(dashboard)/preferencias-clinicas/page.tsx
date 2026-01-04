@@ -13,7 +13,7 @@ export default async function PreferenciasClinicasPage() {
         description="Gerencie suas preferências clínicas de configurações de tratamento"
       />
 
-      <div className="flex gap-4 flex-col p-4 lg:p-6">
+      <div className="flex gap-4 flex-col p-4 lg:py-6 lg:px-20">
         <ClinicalPreferencesForm defaultValues={userData.clinicalPreferences} />
       </div>
     </>

@@ -31,7 +31,7 @@ export default async function PagamentosPendentesPage({
         title="Pagamentos Pendentes"
         description="Gerencie seus pagamentos pendentes"
       />
-      <div className="flex gap-4 flex-col p-4 lg:p-6">
+      <div className="flex gap-4 flex-col p-4 lg:py-6 lg:px-20">
         <PendingPaymentsRequestsTable
           requests={requests?.docs as []}
           totalPages={requests?.totalPages}

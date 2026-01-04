@@ -49,7 +49,7 @@ async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }
         }
       />
 
-      <div className="flex gap-4 flex-col p-4 lg:p-6">
+      <div className="flex gap-4 flex-col p-4 lg:py-6 lg:px-20">
         <div className=" grid grid-cols-1 md:grid-cols-4 gap-4 ">
           <div className="bg-blue-50 p-4 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">
