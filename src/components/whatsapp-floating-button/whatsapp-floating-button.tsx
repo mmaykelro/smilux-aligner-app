@@ -2,8 +2,7 @@ import React from 'react'
 
 const WhatsAppFloatingButton: React.FC = () => {
   const phoneNumber = '556198395485'
-  const message =
-    'Olá! Vim pelo painel administrativo e gostaria de falar com o suporte para tirar uma dúvida.'
+  const message = 'Olá! Vim do portal Smilux e gostaria de tirar uma dúvida.'
   const tooltipText = 'Fale conosco no WhatsApp'
 
   const cleanPhone = phoneNumber.replace(/\D/g, '')
