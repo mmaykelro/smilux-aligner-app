@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@payloadcms/db-vercel-postgres": "3.68.4",
+    "@payloadcms/db-postgres": "3.68.4",
     "@payloadcms/email-resend": "3.68.4",
     "@payloadcms/next": "3.68.4",
     "@payloadcms/payload-cloud": "3.68.4",
