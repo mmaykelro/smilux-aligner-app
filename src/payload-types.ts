@@ -71,6 +71,7 @@ export interface Config {
     users: User;
     customers: Customer;
     requests: Request;
+    'additional-aligners': AdditionalAligner;
     media: Media;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -82,6 +83,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
+    'additional-aligners': AdditionalAlignersSelect<false> | AdditionalAlignersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -479,6 +481,98 @@ export interface Request {
   createdAt: string;
 }
 /**
+ * Formulário de solicitação de alinhadores adicionais para um tratamento já existente
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "additional-aligners".
+ */
+export interface AdditionalAligner {
+  id: number;
+  publicId?: string | null;
+  titleForList?: string | null;
+  customer: number | Customer;
+  patient: string;
+  alignerType: 'upper' | 'lower';
+  /**
+   * Selecione o número do alinhador
+   */
+  alignerNumber?:
+    | (
+        | '1'
+        | '2'
+        | '3'
+        | '4'
+        | '5'
+        | '6'
+        | '7'
+        | '8'
+        | '9'
+        | '10'
+        | '11'
+        | '12'
+        | '13'
+        | '14'
+        | '15'
+        | '16'
+        | '17'
+        | '18'
+        | '19'
+        | '20'
+        | '21'
+        | '22'
+        | '23'
+        | '24'
+        | '25'
+        | '26'
+      )
+    | null;
+  /**
+   * ID sequencial único gerado automaticamente quando a solicitação é finalizada.
+   */
+  orderId?: number | null;
+  /**
+   * Data em que a solicitação foi marcada como concluída.
+   */
+  completionDate?: string | null;
+  /**
+   * Este é o status atual do tratamento. Este campo pode ser alterado a qualquer momento.
+   */
+  status: 'created' | 'in_progress' | 'completed';
+  payment: {
+    status: 'not_paid' | 'paid';
+    /**
+     * Insira o link de pagamento via Pix.
+     */
+    pixUrl?: string | null;
+    /**
+     * Insira o link de pagamento via Cartão de Crédito.
+     */
+    cardUrl?: string | null;
+  };
+  tracking: {
+    status: 'not_sent' | 'preparing' | 'sent' | 'delivered';
+    carrier?: string | null;
+    /**
+     * Código de rastreio dos Correios ou transportadora.
+     */
+    trackingCode?: string | null;
+    /**
+     * Link direto para a página de rastreio.
+     */
+    trackingUrl?: string | null;
+    /**
+     * A data em que o pedido foi efetivamente enviado.
+     */
+    sentDate?: string | null;
+    /**
+     * A data estimada para a entrega do pedido.
+     */
+    estimatedArrival?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -513,6 +607,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'requests';
         value: number | Request;
+      } | null)
+    | ({
+        relationTo: 'additional-aligners';
+        value: number | AdditionalAligner;
       } | null)
     | ({
         relationTo: 'media';
@@ -697,6 +795,40 @@ export interface RequestsSelect<T extends boolean = true> {
   generalInstructions?: T;
   status?: T;
   trackingLink?: T;
+  payment?:
+    | T
+    | {
+        status?: T;
+        pixUrl?: T;
+        cardUrl?: T;
+      };
+  tracking?:
+    | T
+    | {
+        status?: T;
+        carrier?: T;
+        trackingCode?: T;
+        trackingUrl?: T;
+        sentDate?: T;
+        estimatedArrival?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "additional-aligners_select".
+ */
+export interface AdditionalAlignersSelect<T extends boolean = true> {
+  publicId?: T;
+  titleForList?: T;
+  customer?: T;
+  patient?: T;
+  alignerType?: T;
+  alignerNumber?: T;
+  orderId?: T;
+  completionDate?: T;
+  status?: T;
   payment?:
     | T
     | {

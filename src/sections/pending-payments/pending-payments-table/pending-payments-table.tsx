@@ -21,7 +21,7 @@ import {
 import Pagination from '@/components/pagination'
 import { DollarSign } from 'lucide-react'
 import { formatDate } from '@/utils/date'
-import RequestPaymentOrderForm from '@/sections/requests/request-payment-order-form'
+import PaymentOrderForm from '@/components/payment-order-form'
 
 type Request = {
   publicId: string
@@ -44,7 +44,7 @@ type Props = {
   requests: Request[]
 }
 
-export default function PendingPaymentsRequestsTable({ requests, totalPages }: Props) {
+export default function PendingPaymentsTable({ requests, totalPages }: Props) {
   const [sortField, setSortField] = useState<keyof Request>('createdAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
@@ -145,7 +145,7 @@ export default function PendingPaymentsRequestsTable({ requests, totalPages }: P
                               </DialogDescription>
                             </DialogHeader>
 
-                            <RequestPaymentOrderForm
+                            <PaymentOrderForm
                               pixUrl={payment?.pixUrl || ''}
                               cardUrl={payment?.cardUrl || ''}
                               onClose={handleClosePaymentModal}

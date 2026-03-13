@@ -14,7 +14,7 @@ type Props = {
   onClose?: () => void
 }
 
-export default function RequestrPaymentOrderForm({ title, pixUrl, cardUrl, onClose }: Props) {
+export default function PaymentOrderForm({ title, pixUrl, cardUrl, onClose }: Props) {
   const [activeTab, setActiveTab] = useState('pix')
   const [pixError, setPixError] = useState(false)
   const [cardError, setCardError] = useState(false)

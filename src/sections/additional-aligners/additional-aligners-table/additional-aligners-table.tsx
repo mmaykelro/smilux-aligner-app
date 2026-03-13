@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import React, { useState } from 'react'
+import { Eye, Edit, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
@@ -22,13 +23,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import Pagination from '@/components/pagination'
-import { Eye, Edit, DollarSign } from 'lucide-react'
-import { formatDate } from '@/utils/date'
 import PaymentOrderForm from '@/components/payment-order-form'
+import { formatDate } from '@/utils/date'
 
-type Request = {
+type AdditionalAligners = {
   publicId: string
   patient: string
+  alignerType: string
+  alignerNumber: string
   status: string
   createdAt: string
   payment: {
@@ -42,23 +44,26 @@ type Request = {
   }
 }
 
-type RequestTableProps = {
+type AdditionalAlignersTableProps = {
   totalPages: number
-  requests: Request[]
+  additionalAligners: AdditionalAligners[]
 }
 
-const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => {
-  const [sortField, setSortField] = useState<keyof Request>('createdAt')
+export default function AdditionalAlignersTable({
+  additionalAligners,
+  totalPages,
+}: AdditionalAlignersTableProps) {
+  const [sortField, setSortField] = useState<keyof AdditionalAligners>('createdAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
-  const [payment, setPayment] = useState<Request['payment'] | null>()
+  const [payment, setPayment] = useState<AdditionalAligners['payment'] | null>()
 
   const searchParams = useSearchParams()
 
   const pagina = searchParams.get('pagina') || '1'
   const limite = searchParams.get('limite') || '5'
 
-  const handleSort = (field: keyof Request) => {
+  const handleSort = (field: keyof AdditionalAligners) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
@@ -67,7 +72,7 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
     }
   }
 
-  const filteredAndSortedRequests = requests?.sort((a, b) => {
+  const filteredAndSortedAdditionalAligners = additionalAligners?.sort((a, b) => {
     const aValue = a[sortField]
     const bValue = b[sortField]
 
@@ -80,23 +85,30 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
 
   const getStatusLabel = (status: string) => {
     const statusMap: Record<string, string> = {
-      documentation_check: 'Verificando documentação',
+      created: 'Pedido Feito',
       in_progress: 'Em Andamento',
       completed: 'Finalizadas',
+      completed_not_paid: 'Pagamento Pendente',
     }
     return statusMap[status] || status
   }
 
   const getStatusVariant = (status: string) => {
     const variantMap: Record<string, string> = {
-      documentation_check: 'bg-blue-50 text-blue-600',
+      created: 'bg-blue-50 text-blue-600',
       in_progress: 'bg-yellow-50 text-yellow-600',
       completed: 'bg-green-50 text-green-600',
+      completed_not_paid: 'bg-red-50 text-red-600',
     }
     return variantMap[status] || ''
   }
 
-  function handleOpenPaymentModal(isOpen: boolean, payment: Request['payment']) {
+  const mapType: Record<string, string> = {
+    upper: 'Superior',
+    lower: 'Inferior',
+  }
+
+  function handleOpenPaymentModal(isOpen: boolean, payment: AdditionalAligners['payment']) {
     setIsPaymentModalOpen(isOpen)
     setPayment(payment)
   }
@@ -120,6 +132,10 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
               </TableHead>
 
               <TableHead>Status</TableHead>
+
+              <TableHead>Arcada</TableHead>
+
+              <TableHead>Número</TableHead>
               <TableHead
                 className="cursor-pointer hover:bg-gray-50"
                 onClick={() => handleSort('createdAt')}
@@ -131,14 +147,14 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!filteredAndSortedRequests?.length ? (
+            {!filteredAndSortedAdditionalAligners?.length ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                  Nenhuma solicitação encontrada
+                  Nenhuma solicidação de alinhador adicional encontrada
                 </TableCell>
               </TableRow>
             ) : (
-              filteredAndSortedRequests.map((item) => (
+              filteredAndSortedAdditionalAligners.map((item) => (
                 <TableRow key={item.publicId}>
                   <TableCell>{item.patient}</TableCell>
                   <TableCell>
@@ -146,12 +162,14 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
                       {getStatusLabel(item.status)}
                     </Badge>
                   </TableCell>
+                  <TableCell>{mapType[item.alignerType]}</TableCell>
+                  <TableCell>{item.alignerNumber}</TableCell>
                   <TableCell>{formatDate(item.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end space-x-2">
                       <Tooltip>
                         <TooltipTrigger>
-                          <Link href={`/solicitacoes/${item.publicId}`}>
+                          <Link href={`/alinhadores-adicionais/${item.publicId}`}>
                             <Button variant="outline" size="sm" className="h-8 w-8 p-0">
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -164,7 +182,7 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
 
                       <Tooltip>
                         <TooltipTrigger>
-                          <Link href={`/solicitacoes/editar/${item.publicId}`}>
+                          <Link href={`/alinhadores-adicionais/editar/${item.publicId}`}>
                             <Button variant="outline" size="sm" className="h-8 w-8 p-0">
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -175,8 +193,7 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
                         </TooltipContent>
                       </Tooltip>
 
-                      {item?.status === 'completed' &&
-                        (!!item?.payment?.pixUrl?.length || !!item?.payment?.cardUrl?.length) &&
+                      {(!!item?.payment?.pixUrl?.length || !!item?.payment?.cardUrl?.length) &&
                         item.payment?.status === 'not_paid' && (
                           <Tooltip>
                             <TooltipTrigger>
@@ -221,8 +238,8 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
         </Table>
 
         <Pagination
-          data={filteredAndSortedRequests}
-          title="solicitações"
+          data={filteredAndSortedAdditionalAligners}
+          title="alinhadores adicionais"
           page={+pagina}
           limit={+limite}
           totalPages={totalPages}
@@ -231,5 +248,3 @@ const RequestTable: React.FC<RequestTableProps> = ({ totalPages, requests }) => 
     </div>
   )
 }
-
-export default RequestTable

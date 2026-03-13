@@ -16,7 +16,7 @@ export function getInitials(fullName: string): string {
  * @param {number} num - O número a ser formatado.
  * @returns {string} O número formatado como uma string.
  */
-export function formatOrderId(num: number): string {
+export function formatOrderId(num: number, prefix?: string): string {
   // 1. Converte o número para uma string.
   const numAsString = String(num)
 
@@ -24,5 +24,5 @@ export function formatOrderId(num: number): string {
   const paddedNumber = numAsString.padStart(5, '0')
 
   // 3. Adiciona o '#' no início.
-  return `#${paddedNumber}`
+  return `#${prefix ? prefix : ''}${paddedNumber}`
 }

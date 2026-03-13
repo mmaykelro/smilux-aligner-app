@@ -1,14 +1,14 @@
-import { Request } from '@/payload-types' // Use a interface que criamos antes
+import { AdditionalAligner } from '@/payload-types' // Use a interface que criamos antes
 import { formatOrderId } from '@/utils/text'
 
 /**
  * Cria um assunto dinâmico para o e-mail de atualização de status para o cliente.
- * @param {Request} doc - O documento populado da solicitação.
+ * @param {AdditionalAligner} doc - O documento populado da solicitação.
  * @returns {string} O assunto do e-mail.
  */
-export const statusUpdateEmailSubject = (doc: Request): string => {
+export const additionalAlignerStatusUpdateEmailSubject = (doc: AdditionalAligner): string => {
   const patientName = doc.patient || 'seu paciente'
-  const orderId = doc.orderId ? ` ${formatOrderId(doc.orderId)}` : ''
+  const orderId = doc.orderId ? ` ${formatOrderId(doc.orderId, 'AA')}` : ''
 
   if (doc.tracking?.status === 'delivered') {
     return `✅ Pedido Entregue! - Pedido${orderId} para ${patientName}`
@@ -28,16 +28,8 @@ export const statusUpdateEmailSubject = (doc: Request): string => {
     return `✅ Caso Finalizado! Próximo Passo: Pagamento - Pedido ${orderId}`
   }
 
-  if (doc.trackingLink) {
-    return `🎉 Ação Necessária: Avalie o Planejamento Virtual de ${patientName}`
-  }
-
   if (doc.status === 'in_progress') {
-    return `Em Andamento: Planejamento Virtual para ${patientName}`
-  }
-
-  if (doc.status === 'documentation_check') {
-    return `Solicitação Recebida: Verificando Documentação de ${patientName}`
+    return `Em Andamento: Alinhador Adicional para o paciente ${patientName}`
   }
 
   return `Atualização sobre sua Solicitação ${orderId}`
@@ -45,15 +37,15 @@ export const statusUpdateEmailSubject = (doc: Request): string => {
 
 /**
  * Gera o corpo do e-mail em HTML para uma atualização de status da solicitação.
- * @param {Request} doc - O documento completo da solicitação.
+ * @param {AdditionalAligner} doc - O documento completo da solicitação.
  * @param {string} customerDashboardUrl - A URL base do dashboard do cliente (ex: 'https://seusite.com').
  * @returns {string} Uma string contendo o HTML do e-mail.
  */
-export const statusUpdateEmailHTML = (doc: Request): string => {
+export const additionalAlignerStatusUpdateEmailHTML = (doc: AdditionalAligner): string => {
   // --- Mapeamentos para texto legível ---
-  const statusLabels = {
-    documentation_check: 'Verificando documentação',
-    in_progress: 'Em andamento (planejamento virtual)',
+  const statusLabels: Record<string, string> = {
+    created: 'Pedido Feito',
+    in_progress: 'Em andamento',
     completed: 'Caso finalizado',
   }
   const paymentStatusLabels = {
@@ -84,23 +76,15 @@ export const statusUpdateEmailHTML = (doc: Request): string => {
     }
 
     if (doc.payment?.status === 'paid') {
-      return `Recebemos a confirmação do seu pagamento para o caso do paciente ${patientName}. A produção dos seus alinhadores será iniciada. O próximo passo é a preparação para o envio!`
+      return `Recebemos a confirmação do seu pagamento para o caso do paciente ${patientName}. A produção do seu alinhador adicional será iniciada. O próximo passo é a preparação para o envio!`
     }
 
     if (doc.status === 'completed') {
-      return `Parabéns! O planejamento para o paciente ${patientName} foi concluído. Agora, o próximo passo é realizar o pagamento para que possamos iniciar a produção. Verifique os links de pagamento em seu painel.`
-    }
-
-    if (doc.trackingLink) {
-      return `O planejamento virtual para o paciente ${patientName} está pronto para sua avaliação! Por favor, acesse o link disponível em seu painel para visualizar o setup e nos dar seu feedback.`
+      return `Parabéns! O planejamento para o paciente ${patientName} foi concluído. Agora, o próximo passo é o envio. Caso não tenha realizado o pagamento verifique os links em seu painel.`
     }
 
     if (doc.status === 'in_progress') {
-      return `Nossa equipe iniciou o planejamento virtual para o caso do paciente ${patientName}. Em breve, o link para visualização estará disponível para sua avaliação.`
-    }
-
-    if (doc.status === 'documentation_check') {
-      return `Recebemos sua solicitação para o paciente ${patientName}. Nossa equipe está verificando toda a documentação enviada e em breve você receberá novas atualizações.`
+      return `Nossa equipe iniciou o planejamento do alinhador adicional para o paciente ${patientName}. Em breve informaremos os próximos passos.`
     }
 
     return `Houve uma atualização na sua solicitação para o paciente ${patientName}. Veja os detalhes abaixo em seu painel.`
@@ -131,12 +115,12 @@ export const statusUpdateEmailHTML = (doc: Request): string => {
     <html>
     <head>
       <meta charset="UTF-8">
-      <title>Atualização da Solicitação</title>
+      <title>Atualização da Solicitação de Alinhador Adicional</title>
     </head>
     <body style="${styles.body}">
       <div style="${styles.container}">
         <div style="${styles.header}">
-          <h1 style="${styles.headerTitle}">Atualização da sua Solicitação</h1>
+          <h1 style="${styles.headerTitle}">Atualização da sua Solicitação de Alinhador Adicional</h1>
         </div>
         <div style="${styles.content}">
           <p style="${styles.greeting}">Olá, Dr(a). ${customerName},</p>
@@ -155,7 +139,7 @@ export const statusUpdateEmailHTML = (doc: Request): string => {
               </tr>
               <tr>
                 <td style="${styles.summaryTdLabel}">ID do Pedido:</td>
-                <td style="${styles.summaryTdValue}">${doc.orderId ? formatOrderId(doc.orderId) : 'Aguardando Conclusão'}</td>
+                <td style="${styles.summaryTdValue}">${doc.orderId ? formatOrderId(doc.orderId, 'AA') : 'Aguardando Conclusão'}</td>
               </tr>
               <tr>
                 <td style="${styles.summaryTdLabel}">Status do Caso:</td>

@@ -1,5 +1,5 @@
 import PageHeader from '@/components/page-header'
-import PendingPaymentsRequestsTable from '@/sections/requests/pending-payments-request-table'
+import PendingPaymentsRequestsTable from '@/sections/pending-payments/pending-payments-table'
 import { getRequestsAction } from '@/actions/requests'
 
 type SearchParams = Promise<{ [key: string]: string }>

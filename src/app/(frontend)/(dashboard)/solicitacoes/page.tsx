@@ -11,7 +11,7 @@ type SearchParams = Promise<{ [key: string]: string }>
 async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }) {
   const { pagina = 1, limite = 10, paciente, status, data_inicial, data_final } = await searchParams
 
-  const mapStatus: any = {
+  const mapStatus: Record<string, string> = {
     todos: '',
     verificando_documentacao: 'documentation_check',
     em_andamento: 'in_progress',

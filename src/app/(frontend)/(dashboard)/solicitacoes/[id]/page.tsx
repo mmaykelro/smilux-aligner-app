@@ -1,8 +1,8 @@
-import { getRequestAction } from '@/actions/requests'
 import PageHeader from '@/components/page-header'
 import RequestPreview from '@/sections/requests/request-preview'
-import RequestrPaymentOrderForm from '@/sections/requests/request-payment-order-form'
-import RequestStatusStepper from '@/sections/requests/request-status-stepper'
+import PaymentOrderForm from '@/components/payment-order-form'
+import RequestOrderStatusStepper from '@/sections/requests/request-order-status-stepper'
+import { getRequestAction } from '@/actions/requests'
 
 type PageProps = Promise<{
   id: string
@@ -23,7 +23,7 @@ export default async function SolicitacaoPage({ params }: { params: PageProps })
 
       <div className="flex-1 space-y-4  p-4 lg:py-6 lg:px-20">
         {request.status === 'completed' && request.payment.status === 'not_paid' && (
-          <RequestrPaymentOrderForm
+          <PaymentOrderForm
             title="Realize o seu pagamento"
             cardUrl={request.payment.cardUrl || ''}
             pixUrl={request.payment?.pixUrl || ''}
@@ -31,7 +31,7 @@ export default async function SolicitacaoPage({ params }: { params: PageProps })
         )}
 
         {request.status === 'completed' && request.payment.status === 'paid' && (
-          <RequestStatusStepper
+          <RequestOrderStatusStepper
             currentStatus={request.tracking.status}
             orderId={request?.orderId}
             createdAt={request?.createdAt}

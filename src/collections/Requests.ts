@@ -123,7 +123,7 @@ export const Requests: CollectionConfig = {
       async ({ doc, req, previousDoc, operation }) => {
         await relalidatePaths({
           req,
-          paths: ['/', '/solicitaões', `/solicitacoes/${doc.slug}`],
+          paths: ['/', '/solicitacoes', `/solicitacoes/${doc.slug}`],
         })
 
         if (operation !== 'update') {

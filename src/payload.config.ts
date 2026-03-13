@@ -11,6 +11,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { Requests } from './collections/Requests'
+import { AdditionalAligners } from './collections/AdditionalAligners'
 import { Media } from './collections/Media'
 
 import { TermsConditions } from './globals/TermsConditions'
@@ -49,7 +50,7 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { pt },
   },
-  collections: [Users, Customers, Requests, Media],
+  collections: [Users, Customers, Requests, AdditionalAligners, Media],
   globals: [TermsConditions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

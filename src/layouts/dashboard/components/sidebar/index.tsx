@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Home, ChevronLeft, LogOut, X, ClipboardList, DollarSign, Hospital } from 'lucide-react'
+import { Home, ChevronLeft, LogOut, X, ClipboardList, DollarSign, Hospital, Smile } from 'lucide-react'
 import { logout } from '@/services/auth'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -38,6 +38,11 @@ const sideBaritems = [
     icon: ClipboardList,
     title: 'Solicitações',
     href: '/solicitacoes',
+  },
+  {
+    icon: Smile,
+    title: 'Alinhadores Adicionais',
+    href: '/alinhadores-adicionais',
   },
   {
     icon: DollarSign,

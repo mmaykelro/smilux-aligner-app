@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils'
 import { formatOrderId } from '@/utils/text'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { confirmRequestDeliverytAction } from '@/actions/requests'
 
 type OrderStatus = 'not_sent' | 'preparing' | 'sent' | 'delivered'
 
@@ -34,6 +33,7 @@ interface Step {
 }
 
 interface OrderStatusStepperProps {
+  onConfirmDelivery: (id: string) => Promise<void>
   currentStatus: OrderStatus
   orderId?: number | null
   createdAt?: string | null
@@ -43,7 +43,9 @@ interface OrderStatusStepperProps {
   carrier?: string | null
   sentDate?: string | null
   estimatedArrival?: string | null
+  orderNumberPrefix?: string
 }
+
 const steps: Step[] = [
   {
     id: 'not_sent',
@@ -71,7 +73,7 @@ const steps: Step[] = [
   },
 ]
 
-const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
+const OrderStatusStepper: React.FC<OrderStatusStepperProps> = ({
   currentStatus,
   orderId,
   createdAt,
@@ -81,6 +83,8 @@ const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
   carrier,
   sentDate,
   estimatedArrival,
+  onConfirmDelivery,
+  orderNumberPrefix,
 }) => {
   const [copied, setCopied] = useState(false)
   const [isOpenConfirmDelivery, setIsOpenConfirmDelivery] = useState(false)
@@ -123,7 +127,7 @@ const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
   function handleConfirmDelivery() {
     startTransition(async () => {
       try {
-        await confirmRequestDeliverytAction(id as string)
+        await onConfirmDelivery(id as string)
         setIsOpenConfirmDelivery(false)
         toast.success('Confirmação de pedido recebido com sucesso!')
       } catch {
@@ -259,7 +263,9 @@ const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium">Número do pedido:</span>
-                <span className="ml-2">{orderId ? formatOrderId(orderId) : '-'}</span>
+                <span className="ml-2">
+                  {orderId ? formatOrderId(orderId, orderNumberPrefix) : '-'}
+                </span>
               </div>
               <div>
                 <span className="font-medium">Data da criação do pedido:</span>
@@ -333,4 +339,4 @@ const RequestStatusStepper: React.FC<OrderStatusStepperProps> = ({
   )
 }
 
-export default RequestStatusStepper
+export default OrderStatusStepper

@@ -14,9 +14,10 @@ type RadioInputProps = {
   name: string
   options: Option[]
   disabled?: boolean
+  isRow?: boolean
 }
 
-const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options }) => {
+const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options, isRow }) => {
   const { control, clearErrors } = useFormContext()
   return (
     <FormField
@@ -32,11 +33,11 @@ const RadioInput: React.FC<RadioInputProps> = ({ label, name, disabled, options 
               field.onChange(value)
             }}
             value={field.value}
-            className="flex flex-col space-y-2"
+            className={`flex ${isRow ? 'grid grid-cols-11 gap-4' : 'flex-col space-y-2'}`}
             disabled={disabled}
           >
             {options.map((option, index) => (
-              <div key={option.value} className="flex items-center space-x-2">
+              <div key={option.value} className="flex  items-center space-x-2">
                 <RadioGroupItem
                   ref={index === 0 ? field.ref : undefined}
                   value={option.value}
