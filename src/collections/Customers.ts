@@ -107,6 +107,18 @@ export const Customers: CollectionConfig = {
     },
 
     {
+      name: 'prePaymentEnabled',
+      type: 'checkbox',
+      label: 'Exigir pré-pagamento para criar solicitações',
+      defaultValue: false,
+      admin: {
+        description:
+          'Se ativado, o cliente deverá realizar um pré-pagamento antes de criar uma solicitação.',
+      },
+      saveToJWT: true,
+    },
+
+    {
       name: 'cro',
       type: 'group',
       label: 'CRO',

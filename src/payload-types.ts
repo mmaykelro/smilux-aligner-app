@@ -70,6 +70,7 @@ export interface Config {
   collections: {
     users: User;
     customers: Customer;
+    'requests-pre-payments': RequestsPrePayment;
     requests: Request;
     'additional-aligners': AdditionalAligner;
     media: Media;
@@ -82,6 +83,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
+    'requests-pre-payments': RequestsPrePaymentsSelect<false> | RequestsPrePaymentsSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
     'additional-aligners': AdditionalAlignersSelect<false> | AdditionalAlignersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -96,9 +98,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'terms-conditions': TermsCondition;
+    'pre-payment-requests-settings': PrePaymentRequestsSetting;
   };
   globalsSelect: {
     'terms-conditions': TermsConditionsSelect<false> | TermsConditionsSelect<true>;
+    'pre-payment-requests-settings': PrePaymentRequestsSettingsSelect<false> | PrePaymentRequestsSettingsSelect<true>;
   };
   locale: null;
   user:
@@ -195,6 +199,10 @@ export interface Customer {
    * Data e hora em que o usuário aceitou os termos ao se cadastrar.
    */
   termsAcceptanceDate?: string | null;
+  /**
+   * Se ativado, o cliente deverá realizar um pré-pagamento antes de criar uma solicitação.
+   */
+  prePaymentEnabled?: boolean | null;
   cro: {
     number: string;
     state:
@@ -481,6 +489,20 @@ export interface Request {
   createdAt: string;
 }
 /**
+ * Registros de pré-pagamento das solicitações.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "requests-pre-payments".
+ */
+export interface RequestsPrePayment {
+  id: number;
+  customer: number | Customer;
+  request?: (number | null) | Request;
+  status: 'created' | 'paid';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Formulário de solicitação de alinhadores adicionais para um tratamento já existente
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -605,6 +627,10 @@ export interface PayloadLockedDocument {
         value: number | Customer;
       } | null)
     | ({
+        relationTo: 'requests-pre-payments';
+        value: number | RequestsPrePayment;
+      } | null)
+    | ({
         relationTo: 'requests';
         value: number | Request;
       } | null)
@@ -701,6 +727,7 @@ export interface CustomersSelect<T extends boolean = true> {
   phone?: T;
   profileImage?: T;
   termsAcceptanceDate?: T;
+  prePaymentEnabled?: T;
   cro?:
     | T
     | {
@@ -751,6 +778,17 @@ export interface CustomersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "requests-pre-payments_select".
+ */
+export interface RequestsPrePaymentsSelect<T extends boolean = true> {
+  customer?: T;
+  request?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -939,12 +977,39 @@ export interface TermsCondition {
   createdAt?: string | null;
 }
 /**
+ * Configurações de pré-pagamento para as solicitações dos clientes
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pre-payment-requests-settings".
+ */
+export interface PrePaymentRequestsSetting {
+  id: number;
+  amount: number;
+  /**
+   * Pode ser uma URL do QR Code ou o código copia e cola do PIX.
+   */
+  pixQrCode: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "terms-conditions_select".
  */
 export interface TermsConditionsSelect<T extends boolean = true> {
   showTerms?: T;
   content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pre-payment-requests-settings_select".
+ */
+export interface PrePaymentRequestsSettingsSelect<T extends boolean = true> {
+  amount?: T;
+  pixQrCode?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

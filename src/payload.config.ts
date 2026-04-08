@@ -10,11 +10,13 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
+import { RequestsPrePayments } from './collections/RequestsPrePayments'
 import { Requests } from './collections/Requests'
 import { AdditionalAligners } from './collections/AdditionalAligners'
 import { Media } from './collections/Media'
 
 import { TermsConditions } from './globals/TermsConditions'
+import { PrePaymentRequestsSettings } from './globals/PrePaymentRequestsSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -50,8 +52,8 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { pt },
   },
-  collections: [Users, Customers, Requests, AdditionalAligners, Media],
-  globals: [TermsConditions],
+  collections: [Users, Customers, RequestsPrePayments, Requests, AdditionalAligners, Media],
+  globals: [TermsConditions, PrePaymentRequestsSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

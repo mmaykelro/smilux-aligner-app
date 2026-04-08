@@ -1,15 +1,16 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import NewRequestButton from '@/sections/requests/new-request-button'
 import RequestsTableFilters from '@/sections/requests/requests-table-filters'
 import RequestTable from '@/sections/requests/request-table'
-import { Plus } from 'lucide-react'
 import PageHeader from '@/components/page-header'
 import { getRequestsAction, getRequestsStatusAction } from '@/actions/requests'
+import { getCustomerAction } from '@/actions/customer'
 
 type SearchParams = Promise<{ [key: string]: string }>
 
 async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }) {
   const { pagina = 1, limite = 10, paciente, status, data_inicial, data_final } = await searchParams
+
+  const user = await getCustomerAction()
 
   const mapStatus: Record<string, string> = {
     todos: '',
@@ -40,12 +41,12 @@ async function SolicitacoesPage({ searchParams }: { searchParams: SearchParams }
         title="Solicitações"
         description="Gerencie suas prescrições de tratamento"
         action={
-          <Link href="/solicitacoes/nova">
-            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-fit">
-              <Plus className="h-4 w-4 mr-2" />
-              Nova Solicitação
-            </Button>
-          </Link>
+          <NewRequestButton
+            prePaymentEnabled={
+              //@ts-ignore
+              user.prePaymentEnabled
+            }
+          />
         }
       />
 

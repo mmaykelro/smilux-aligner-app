@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import RequestCard from '@/components/request-card'
+import NewRequestButton from '@/sections/requests/new-request-button'
 import PendingsPayentsWidget from '@/sections/dashboard/pendings-payments-widget'
 import { getCustomerAction } from '@/actions/customer'
 import { getRequestsStatusAction } from '@/actions/requests'
@@ -22,12 +21,12 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild className="w-full sm:w-auto">
-            <Link href="/solicitacoes/nova">
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Solicitação
-            </Link>
-          </Button>
+          <NewRequestButton
+            prePaymentEnabled={
+              //@ts-ignore
+              user.prePaymentEnabled
+            }
+          />
         </div>
       </div>
 

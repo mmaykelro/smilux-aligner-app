@@ -215,13 +215,39 @@ export async function createRequestAction(formData: FormData) {
     documents.push(uploadedDocument)
   }
 
-  await payload.create({
+  const request = await payload.create({
     collection: 'requests',
     data: {
       customer: user.id,
       ...rawData,
       documents,
       status: 'documentation_check',
+    },
+  })
+
+  const prePaymentRequest = await payload
+    .find({
+      collection: 'requests-pre-payments',
+      where: {
+        customer: {
+          equals: user.id,
+        },
+        status: {
+          equals: 'paid',
+        },
+      },
+    })
+    .then((result) => result?.docs?.[0])
+
+  await payload.update({
+    collection: 'requests-pre-payments',
+    where: {
+      id: {
+        equals: prePaymentRequest?.id,
+      },
+    },
+    data: {
+      request: request.id,
     },
   })
 
