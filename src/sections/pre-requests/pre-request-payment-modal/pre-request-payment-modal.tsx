@@ -35,14 +35,14 @@ export default function PreRequestPaymentModal({ open, onOpenChange, settings }:
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Pré-pagamento necessário</DialogTitle>
-          <DialogDescription>Finalize seu pagamento para continua</DialogDescription>
+          <DialogDescription>Finalize seu pagamento para continuar</DialogDescription>
         </DialogHeader>
 
         <p className="text-sm text-gray-700">
-          O planejamento virtual é essencial para garantir previsibilidade e qualidade no
-          tratamento, sendo realizado mediante a taxa{' '}
-          <strong>{formatCurrency(settings?.amount || 0)}</strong>, valor totalmente abatido na
-          contratação de um plano de alinhadores.
+          Prezado(a), Doutor(a), para novas solicitações de planejamento virtual, será necessário
+          realizar o pagamento de <strong>{formatCurrency(settings?.amount || 0)}</strong> por
+          planejamento, considerando o processo técnico e individualizado envolvido — valor que é
+          totalmente abatido na contratação de qualquer plano de alinhadores.
         </p>
 
         <p className="text-sm text-gray-700">

@@ -18,7 +18,7 @@ export async function getPrePaymentRequestAction() {
           equals: user.id,
         },
       },
-      sort: '-createdAt', // 👈 mais recente primeiro
+      sort: '-createdAt',
       limit: 1,
     })
     .then((result) => result?.docs?.[0])
