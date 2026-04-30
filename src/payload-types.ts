@@ -73,6 +73,7 @@ export interface Config {
     'requests-pre-payments': RequestsPrePayment;
     requests: Request;
     'additional-aligners': AdditionalAligner;
+    containments: Containment;
     media: Media;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -86,6 +87,7 @@ export interface Config {
     'requests-pre-payments': RequestsPrePaymentsSelect<false> | RequestsPrePaymentsSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
     'additional-aligners': AdditionalAlignersSelect<false> | AdditionalAlignersSelect<true>;
+    containments: ContainmentsSelect<false> | ContainmentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -595,6 +597,70 @@ export interface AdditionalAligner {
   createdAt: string;
 }
 /**
+ * Formulários de prescrição para novas solicitações de contenção.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "containments".
+ */
+export interface Containment {
+  id: number;
+  publicId?: string | null;
+  patient?: string | null;
+  documents?:
+    | {
+        documentName: string;
+        documentFile: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  customer: number | Customer;
+  /**
+   * ID sequencial único gerado automaticamente quando a solicitação é finalizada.
+   */
+  orderId?: number | null;
+  /**
+   * Data em que a solicitação foi marcada como concluída.
+   */
+  completionDate?: string | null;
+  /**
+   * Este é o status atual do tratamento. Este campo pode ser alterado a qualquer momento.
+   */
+  status: 'created' | 'in_progress' | 'completed';
+  payment: {
+    status: 'not_paid' | 'paid';
+    /**
+     * Insira o link de pagamento via Pix.
+     */
+    pixUrl?: string | null;
+    /**
+     * Insira o link de pagamento via Cartão de Crédito.
+     */
+    cardUrl?: string | null;
+  };
+  tracking: {
+    status: 'not_sent' | 'preparing' | 'sent' | 'delivered';
+    carrier?: string | null;
+    /**
+     * Código de rastreio dos Correios ou transportadora.
+     */
+    trackingCode?: string | null;
+    /**
+     * Link direto para a página de rastreio.
+     */
+    trackingUrl?: string | null;
+    /**
+     * A data em que o pedido foi efetivamente enviado.
+     */
+    sentDate?: string | null;
+    /**
+     * A data estimada para a entrega do pedido.
+     */
+    estimatedArrival?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -637,6 +703,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'additional-aligners';
         value: number | AdditionalAligner;
+      } | null)
+    | ({
+        relationTo: 'containments';
+        value: number | Containment;
       } | null)
     | ({
         relationTo: 'media';
@@ -864,6 +934,44 @@ export interface AdditionalAlignersSelect<T extends boolean = true> {
   patient?: T;
   alignerType?: T;
   alignerNumber?: T;
+  orderId?: T;
+  completionDate?: T;
+  status?: T;
+  payment?:
+    | T
+    | {
+        status?: T;
+        pixUrl?: T;
+        cardUrl?: T;
+      };
+  tracking?:
+    | T
+    | {
+        status?: T;
+        carrier?: T;
+        trackingCode?: T;
+        trackingUrl?: T;
+        sentDate?: T;
+        estimatedArrival?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "containments_select".
+ */
+export interface ContainmentsSelect<T extends boolean = true> {
+  publicId?: T;
+  patient?: T;
+  documents?:
+    | T
+    | {
+        documentName?: T;
+        documentFile?: T;
+        id?: T;
+      };
+  customer?: T;
   orderId?: T;
   completionDate?: T;
   status?: T;

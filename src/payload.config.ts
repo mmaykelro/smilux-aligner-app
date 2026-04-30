@@ -13,6 +13,7 @@ import { Customers } from './collections/Customers'
 import { RequestsPrePayments } from './collections/RequestsPrePayments'
 import { Requests } from './collections/Requests'
 import { AdditionalAligners } from './collections/AdditionalAligners'
+import { Containments } from './collections/Containments'
 import { Media } from './collections/Media'
 
 import { TermsConditions } from './globals/TermsConditions'
@@ -52,7 +53,15 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { pt },
   },
-  collections: [Users, Customers, RequestsPrePayments, Requests, AdditionalAligners, Media],
+  collections: [
+    Users,
+    Customers,
+    RequestsPrePayments,
+    Requests,
+    AdditionalAligners,
+    Containments,
+    Media,
+  ],
   globals: [TermsConditions, PrePaymentRequestsSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

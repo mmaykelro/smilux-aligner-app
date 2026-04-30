@@ -30,7 +30,7 @@ type StatusValue = (typeof statusOptions)[number]['value']
 
 type StatusCounts = Record<StatusValue, number>
 
-type getAdditionalAlignersActionActionRequest = {
+type GetAdditionalAlignersActionActionRequest = {
   pagination?: Pagination
   filters?: {
     patient?: string
@@ -46,7 +46,7 @@ type getAdditionalAlignersActionActionRequest = {
 export async function getAdditionalAlignersAction({
   pagination,
   filters,
-}: getAdditionalAlignersActionActionRequest) {
+}: GetAdditionalAlignersActionActionRequest) {
   const page = pagination?.page || 1
   const limit = pagination?.limit || 10
 

@@ -85,9 +85,6 @@ export default async function AlinhadorAdicionalPage({ params }: { params: PageP
             </div>
           </CardContent>
         </Card>
-        {/* <div className="bg-gray-50 rounded-lg p-4">
-         
-        </div> */}
 
         {additionalAligner.status === 'completed' &&
           additionalAligner.payment.status === 'paid' && (
