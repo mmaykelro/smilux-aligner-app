@@ -72,6 +72,7 @@ export interface Config {
     customers: Customer;
     'requests-pre-payments': RequestsPrePayment;
     requests: Request;
+    refinements: Refinement;
     'additional-aligners': AdditionalAligner;
     containments: Containment;
     media: Media;
@@ -86,6 +87,7 @@ export interface Config {
     customers: CustomersSelect<false> | CustomersSelect<true>;
     'requests-pre-payments': RequestsPrePaymentsSelect<false> | RequestsPrePaymentsSelect<true>;
     requests: RequestsSelect<false> | RequestsSelect<true>;
+    refinements: RefinementsSelect<false> | RefinementsSelect<true>;
     'additional-aligners': AdditionalAlignersSelect<false> | AdditionalAlignersSelect<true>;
     containments: ContainmentsSelect<false> | ContainmentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -500,7 +502,131 @@ export interface RequestsPrePayment {
   id: number;
   customer: number | Customer;
   request?: (number | null) | Request;
+  refinement?: (number | null) | Refinement;
   status: 'created' | 'paid';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Formulários de prescrição para refinamento de tratamentos já finalizados.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "refinements".
+ */
+export interface Refinement {
+  id: number;
+  publicId?: string | null;
+  titleForList?: string | null;
+  /**
+   * ID sequencial único gerado automaticamente quando o refinamento é finalizado.
+   */
+  orderId?: number | null;
+  /**
+   * Data em que o refinamento foi marcado como concluído.
+   */
+  completionDate?: string | null;
+  customer: number | Customer;
+  /**
+   * Solicitação finalizada que está sendo refinada.
+   */
+  request: number | Request;
+  patient: string;
+  /**
+   * Qualquer outra informação relevante para este caso que não se encaixa nos campos acima.
+   */
+  additionalInfo?: string | null;
+  documents?:
+    | {
+        documentName: string;
+        documentFile: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  archToTreat: 'none' | 'both' | 'upper' | 'lower';
+  /**
+   * Selecione algum dente que NÃO deseje movimentar na arcada SUPERIOR (implante, anquilose, prótese, etc).
+   */
+  upperJawMovementRestriction?:
+    | ('11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '21' | '22' | '23' | '24' | '25' | '26' | '27')[]
+    | null;
+  /**
+   * Selecione algum dente que NÃO deseje movimentar na arcada INFERIOR (implante, anquilose, prótese, etc).
+   */
+  lowerJawMovementRestriction?:
+    | ('31' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '41' | '42' | '43' | '44' | '45' | '46' | '47')[]
+    | null;
+  apRelationUpper?: ('improve_canine' | 'improve_canine_and_molar' | 'improve_molar' | 'none') | null;
+  apRelationLower?: ('improve_canine' | 'improve_canine_and_molar' | 'improve_molar' | 'none') | null;
+  /**
+   * Detalhes sobre a distalização "2 by 2" ou em bloco de no máximo 2mm.
+   */
+  distalizationInstructions?: string | null;
+  elasticCutouts?: {
+    canineElastic?: ('right' | 'left' | 'both' | 'none') | null;
+    canineButton?: ('right' | 'left' | 'both' | 'none') | null;
+    molarElastic?: ('right' | 'left' | 'both' | 'none') | null;
+    molarButton?: ('right' | 'left' | 'both' | 'none') | null;
+  };
+  elasticCutoutInstructions?: string | null;
+  useAttachments: 'yes' | 'no';
+  upperJawNoAttachments?:
+    | ('11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '21' | '22' | '23' | '24' | '25' | '26' | '27')[]
+    | null;
+  lowerJawNoAttachments?:
+    | ('31' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '41' | '42' | '43' | '44' | '45' | '46' | '47')[]
+    | null;
+  /**
+   * Limite padrão de 0,5mm entre as faces.
+   */
+  performIPR: 'yes' | 'no' | 'detail_below';
+  /**
+   * Caso deseje, detalhe a região exata de onde fazer (IPR). Por exemplo: fazer IPR de 0,3mm entre os dentes 44 e 45.
+   */
+  iprDetails?: string | null;
+  /**
+   * No caso de presença de DIASTEMAS não visualizados no escaneamento, por favor descrever exatamente a região a ser movimentada. Por exemplo: fechar diastema de 0,2mm entre os dentes 16 e 17.
+   */
+  diastemaInstructions?: string | null;
+  generalInstructions?: string | null;
+  /**
+   * Este é o status atual do refinamento. Este campo pode ser alterado a qualquer momento.
+   */
+  status: 'documentation_check' | 'in_progress' | 'completed';
+  /**
+   * Link externo para o planejamento virtual ou acompanhamento do caso.
+   */
+  trackingLink?: string | null;
+  payment: {
+    status: 'not_paid' | 'paid';
+    /**
+     * Insira o link de pagamento via Pix.
+     */
+    pixUrl?: string | null;
+    /**
+     * Insira o link de pagamento via Cartão de Crédito.
+     */
+    cardUrl?: string | null;
+  };
+  tracking: {
+    status: 'not_sent' | 'preparing' | 'sent' | 'delivered';
+    carrier?: string | null;
+    /**
+     * Código de rastreio dos Correios ou transportadora.
+     */
+    trackingCode?: string | null;
+    /**
+     * Link direto para a página de rastreio.
+     */
+    trackingUrl?: string | null;
+    /**
+     * A data em que o pedido foi efetivamente enviado.
+     */
+    sentDate?: string | null;
+    /**
+     * A data estimada para a entrega do pedido.
+     */
+    estimatedArrival?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -701,6 +827,10 @@ export interface PayloadLockedDocument {
         value: number | Request;
       } | null)
     | ({
+        relationTo: 'refinements';
+        value: number | Refinement;
+      } | null)
+    | ({
         relationTo: 'additional-aligners';
         value: number | AdditionalAligner;
       } | null)
@@ -856,6 +986,7 @@ export interface CustomersSelect<T extends boolean = true> {
 export interface RequestsPrePaymentsSelect<T extends boolean = true> {
   customer?: T;
   request?: T;
+  refinement?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -870,6 +1001,70 @@ export interface RequestsSelect<T extends boolean = true> {
   orderId?: T;
   completionDate?: T;
   customer?: T;
+  patient?: T;
+  additionalInfo?: T;
+  documents?:
+    | T
+    | {
+        documentName?: T;
+        documentFile?: T;
+        id?: T;
+      };
+  archToTreat?: T;
+  upperJawMovementRestriction?: T;
+  lowerJawMovementRestriction?: T;
+  apRelationUpper?: T;
+  apRelationLower?: T;
+  distalizationInstructions?: T;
+  elasticCutouts?:
+    | T
+    | {
+        canineElastic?: T;
+        canineButton?: T;
+        molarElastic?: T;
+        molarButton?: T;
+      };
+  elasticCutoutInstructions?: T;
+  useAttachments?: T;
+  upperJawNoAttachments?: T;
+  lowerJawNoAttachments?: T;
+  performIPR?: T;
+  iprDetails?: T;
+  diastemaInstructions?: T;
+  generalInstructions?: T;
+  status?: T;
+  trackingLink?: T;
+  payment?:
+    | T
+    | {
+        status?: T;
+        pixUrl?: T;
+        cardUrl?: T;
+      };
+  tracking?:
+    | T
+    | {
+        status?: T;
+        carrier?: T;
+        trackingCode?: T;
+        trackingUrl?: T;
+        sentDate?: T;
+        estimatedArrival?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "refinements_select".
+ */
+export interface RefinementsSelect<T extends boolean = true> {
+  publicId?: T;
+  titleForList?: T;
+  orderId?: T;
+  completionDate?: T;
+  customer?: T;
+  request?: T;
   patient?: T;
   additionalInfo?: T;
   documents?:

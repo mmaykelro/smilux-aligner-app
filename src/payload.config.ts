@@ -12,6 +12,7 @@ import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { RequestsPrePayments } from './collections/RequestsPrePayments'
 import { Requests } from './collections/Requests'
+import { Refinements } from './collections/Refinements'
 import { AdditionalAligners } from './collections/AdditionalAligners'
 import { Containments } from './collections/Containments'
 import { Media } from './collections/Media'
@@ -58,6 +59,7 @@ export default buildConfig({
     Customers,
     RequestsPrePayments,
     Requests,
+    Refinements,
     AdditionalAligners,
     Containments,
     Media,

@@ -34,6 +34,13 @@ export const RequestsPrePayments: CollectionConfig = {
       label: 'Solicitação',
     },
     {
+      name: 'refinement',
+      type: 'relationship',
+      relationTo: 'refinements',
+      required: false,
+      label: 'Refinamento',
+    },
+    {
       name: 'status',
       type: 'select',
       required: true,

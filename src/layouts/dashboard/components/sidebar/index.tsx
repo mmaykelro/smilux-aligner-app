@@ -17,6 +17,7 @@ import {
   DollarSign,
   Hospital,
   Smile,
+  RefreshCcw,
 } from 'lucide-react'
 import { logout } from '@/services/auth'
 
@@ -47,6 +48,11 @@ const sideBaritems = [
     icon: ClipboardList,
     title: 'Solicitações',
     href: '/solicitacoes',
+  },
+  {
+    icon: RefreshCcw,
+    title: 'Refinamentos',
+    href: '/refinamentos',
   },
   {
     icon: Smile,
